@@ -43,3 +43,12 @@ async def process_ticker(element):
     stock['change'] = round(change*100/open_price, 2)
     return stock
 
+
+async def update_local_db(stock):
+    print("Update local database Running")
+
+
+async def update_remote_db(stock):
+    # print("Update remote database Running")
+    pass
+
