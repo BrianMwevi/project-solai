@@ -31,3 +31,15 @@ async def process_data(ticker_elements: list):
             stocks.append(process_ticker(element))
         return await asyncio.gather(*stocks)
 
+
+async def process_ticker(element):
+    stock = {}
+    stock['ticker'] = element.get('a')
+    price = stock['price'] = float(element.get('b').replace(',', ''))
+    change = float(element.get('d')) if element.get('d') != None else 0
+    change_direction = element.get('f')
+    change = change*-1 if change_direction == 'l' else change
+    open_price = stock['open_price'] = round(price - change, 2)
+    stock['change'] = round(change*100/open_price, 2)
+    return stock
+
