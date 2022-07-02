@@ -20,3 +20,14 @@ async def parse_data():
         xml_data = await fetch_url(config("URL_V1"), session)
         soup = BeautifulSoup(xml_data, features="xml")
         return soup.select("i")
+
+
+async def process_data(ticker_elements: list):
+    async with ClientSession() as session:
+        stocks = []
+        for element in ticker_elements:
+            if element.get('b') == "-":
+                continue
+            stocks.append(process_ticker(element))
+        return await asyncio.gather(*stocks)
+
