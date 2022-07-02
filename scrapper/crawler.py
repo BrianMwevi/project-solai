@@ -1,14 +1,10 @@
-# from api.serializers import StockSerializer
 import asyncio
 from aiohttp import ClientSession
-from datetime import datetime
 from bs4 import BeautifulSoup
 from decouple import config
-# from api.serializers import StockSerializer
 
 
 async def fetch_url(url: str, session: ClientSession, **kwargs):
-    print("Start: ", datetime.now())
     resp = await session.request(method='GET', url=url, **kwargs)
     resp.raise_for_status()
     xml_data = await resp.text()
@@ -45,10 +41,17 @@ async def process_ticker(element):
 
 
 async def update_local_db(stock):
-    print("Update local database Running")
+    pass
 
 
 async def update_remote_db(stock):
-    # print("Update remote database Running")
     pass
 
+
+async def main():
+    ticker_elements = await parse_data()
+    stocks = await process_data(ticker_elements)
+    [asyncio.create_task(update_local_db(stock)) for stock in stocks]
+    [asyncio.create_task(update_remote_db(stock)) for stock in stocks]
+
+asyncio.run(main())
