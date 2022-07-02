@@ -2,11 +2,13 @@ from rest_framework import serializers
 from stocks_v1.models import Stock
 
 
-class StockSerializer(serializers.ModelSerializer):
+class StockSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='stock-detail')
 
     class Meta:
         model = Stock
         fields = [
+            'url',
             'id',
             'category',
             'name',
