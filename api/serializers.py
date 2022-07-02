@@ -15,7 +15,7 @@ class StockSerializer(serializers.ModelSerializer):
             'price',
             'prev_price',
             'open_price',
-            'change',
+            'percentage_change',
             'max_price',
             'min_price',
             'updated_at',
