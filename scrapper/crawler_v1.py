@@ -2,16 +2,22 @@ import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from decouple import config
+from asgiref.sync import sync_to_async
+# from scraper.updater import update_stock
+
+# from api.serializers import StockSerializer
 
 
 async def fetch_url(url: str, session: ClientSession, **kwargs):
     resp = await session.request(method='GET', url=url, **kwargs)
     resp.raise_for_status()
     xml_data = await resp.text()
+    print("Crawler")
     return xml_data
 
 
 async def parse_data():
+    """Converts string data to xml list of elements"""
     async with ClientSession() as session:
         xml_data = await fetch_url(config("URL_V1"), session)
         soup = BeautifulSoup(xml_data, features="xml")
@@ -41,6 +47,7 @@ async def process_ticker(element):
 
 
 async def update_local_db(stock):
+    # update_stock(stock)
     pass
 
 
@@ -51,7 +58,12 @@ async def update_remote_db(stock):
 async def main():
     ticker_elements = await parse_data()
     stocks = await process_data(ticker_elements)
-    [asyncio.create_task(update_local_db(stock)) for stock in stocks]
-    [asyncio.create_task(update_remote_db(stock)) for stock in stocks]
+    task1 = [asyncio.create_task(update_local_db(stock)) for stock in stocks]
+    task2 = [asyncio.create_task(update_remote_db(stock)) for stock in stocks]
 
-asyncio.run(main())
+
+def scraper():
+    asyncio.run(main())
+
+
+scraper()
