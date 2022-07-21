@@ -6,6 +6,10 @@ from django.shortcuts import get_object_or_404
 import requests
 from decouple import config
 
+headers = {
+    "Content-Type": "application/json",
+}
+
 
 def check_stock(ticker):
     try:
@@ -23,11 +27,11 @@ def update_stocks(stocks):
             if to_update:
 
                 dev_url = f"{config('DEV_URL')}/stocks/{old_stock.id}/"
-                pro_url = f"{config('PROD_URL')}/stocks/{old_stock.id}/"
+                prod_url = f"{config('PROD_URL')}/stocks/{old_stock.id}/"
                 requests.request(
                     method='PUT', url=dev_url, data=stock_to_update)
                 requests.request(
-                    method='PUT', url=prod_url, data=stock_to_update)
+                    method='PUT', url=prod_url, data=stock_to_update, headers=headers)
                 # TODO: update remote db as well
         else:
             prod_url = f"{config('PROD_URL')}/stocks/"
@@ -35,7 +39,7 @@ def update_stocks(stocks):
             requests.request(
                 method='POST', url=dev_url, data=new_stock)
             requests.request(
-                method='POST', url=prod_url, data=new_stock)
+                method='POST', url=prod_url, data=new_stock, headers=headers)
 
 
 def process_update(old_stock, new_stock):
