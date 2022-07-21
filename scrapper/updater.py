@@ -1,3 +1,4 @@
+from itertools import product
 from simple_history.utils import update_change_reason
 from stocks_v1.models import Stock
 import asyncio
@@ -23,14 +24,18 @@ def update_stocks(stocks):
 
                 dev_url = f"{config('DEV_URL')}/stocks/{old_stock.id}/"
                 pro_url = f"{config('PROD_URL')}/stocks/{old_stock.id}/"
-                updated_stock = requests.request(
+                requests.request(
                     method='PUT', url=dev_url, data=stock_to_update)
+                requests.request(
+                    method='PUT', url=prod_url, data=stock_to_update)
                 # TODO: update remote db as well
         else:
             prod_url = f"{config('PROD_URL')}/stocks/"
             dev_url = f"{config('DEV_URL')}/stocks/"
-            created_stock = requests.request(
+            requests.request(
                 method='POST', url=dev_url, data=new_stock)
+            requests.request(
+                method='POST', url=prod_url, data=new_stock)
 
 
 def process_update(old_stock, new_stock):
