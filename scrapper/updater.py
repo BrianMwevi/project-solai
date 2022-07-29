@@ -30,7 +30,7 @@ def update_stocks(stocks):
                 requests.request(
                     method='PUT', url=dev_url, data=stock_to_update)
                 updated_stock = requests.request(
-                    method='PUT', url=prod_url, data=stock_to_update, headers=headers)
+                    method='PUT', url=prod_url, data=stock_to_update)
                 print(f"\n{updated_stock.text}\n")
                 # TODO: update remote db as well\
                 # stock_to_update['id'] = old_stock.id
@@ -42,7 +42,7 @@ def update_stocks(stocks):
             requests.request(
                 method='POST', url=dev_url, data=new_stock)
             created_stock = requests.request(
-                method='POST', url=prod_url, json=new_stock, headers=headers)
+                method='POST', url=prod_url, data=new_stock)
             # update_change_reason(created_stock, "Genesis Stock")
             print("Creating stocks ... ", created_stock)
 
