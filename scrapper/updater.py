@@ -21,11 +21,12 @@ def check_stock(ticker):
 
 def update_stocks(stocks):
     for new_stock in stocks:
+        
         exist, old_stock = check_stock(new_stock['ticker'])
         if exist:
             to_update, stock_to_update = process_update(old_stock, new_stock)
             if to_update:
-
+                print(stock_to_update)
                 dev_url = f"{config('DEV_URL')}/stocks/{old_stock.id}/"
                 prod_url = f"{config('PROD_URL')}/stocks/{old_stock.id}/"
                 requests.request(
@@ -38,7 +39,7 @@ def update_stocks(stocks):
             dev_url = f"{config('DEV_URL')}/stocks/"
             requests.request(
                 method='POST', url=dev_url, data=new_stock)
-            requests.request(
+            created_stocks = requests.request(
                 method='POST', url=prod_url, data=new_stock, headers=headers)
 
 
