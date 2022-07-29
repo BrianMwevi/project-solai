@@ -26,7 +26,7 @@ scheduler = background.BackgroundScheduler()
 def start():
     print("Running....")
     # scheduler.add_job(scrap, 'cron', day_of_week='mon-sun', hour='0-23', minute="0-59/1", id='update_stock')
-    scheduler.add_job(spider_v1.main, 'interval', seconds=5,
+    scheduler.add_job(spider_v1.main, 'interval', seconds=15,
                       id='update_stocks', replace_existing=True)
     # scheduler.add_job(schedule_email, 'interval', seconds=30,replace_existing=True)
     # scheduler.add_job(schedule_email, 'cron', day_of_week='mon-sun',
