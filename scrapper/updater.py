@@ -42,7 +42,7 @@ def update_stocks(stocks):
             requests.request(
                 method='POST', url=dev_url, data=new_stock)
             created_stock = requests.request(
-                method='POST', url=prod_url, json=new_stock, headers=headers)
+                method='POST', url=prod_url, data=new_stock, headers=headers)
             # update_change_reason(created_stock, "Genesis Stock")
             print("Creating stocks ... ", created_stock)
 
