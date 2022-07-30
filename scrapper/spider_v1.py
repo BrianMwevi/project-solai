@@ -1,9 +1,10 @@
+import asyncio
 from bs4 import BeautifulSoup
 from decouple import config
-# from scrapper.updater import update_stocks
 import requests
 from scrapper.update_json import compare_stock
-import os
+from scrapper.updater import update_stocks
+
 
 def fetch_url(url: str):
     resp = requests.request(method='GET', url=url)
@@ -18,15 +19,18 @@ def parse_data(text_data: str):
 
 
 def process_data(ticker_elements: list):
-    stocks = []
+    update_list = []
+    create_list = []
     for element in ticker_elements:
         if element.get('b') == "-":
             continue
         stock = process_ticker(element)
         updated, created = compare_stock(stock)
-        if updated or created:
-            stocks.append(stock)
-    return stocks
+        if updated:
+            update_list.append(stock)
+        if created:
+            create_list.append(stock)
+    return [update_list, create_list]
 
 
 def process_ticker(element):
@@ -38,15 +42,14 @@ def process_ticker(element):
     change_direction = element.get('f')
     change = change*-1 if change_direction == 'l' else change
     open_price = stock['open_price'] = round(price - change, 2)
-    stock['percentage_change'] = round(change*100/open_price, 2)
+    stock['percentage_change'] = round(
+        change*100/open_price, 2)
     return stock
 
 
 def main():
     raw_data = fetch_url(config("URL_V1"))
     ticker_elements = parse_data(raw_data)
-    stocks = process_data(ticker_elements)
-    if stocks:
-        print(stocks)
-        
-        # update_stocks(stocks)
+    update_list, create_list = process_data(ticker_elements)
+    if create_list or update_list:
+        asyncio.run(update_stocks(update_list, create_list))
