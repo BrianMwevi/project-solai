@@ -51,3 +51,22 @@ def update_stock(new_stock, stocks):
 
     return create_stock(new_stock, stocks)
 
+
+def get_stocks(new_stock):
+    """ Gets specific stock and all available stocks from json_stocks.json file
+
+    :param new_stock: the most recent scrapped stock
+    :type new_stock: dict
+    :return specific stock and all available stocks
+    :rtype: dict|NoneType
+    """
+
+    stocks_file = os.getcwd() + '/scrapper/json_stocks.json'
+    with open(stocks_file, 'r') as fp:
+        stocks = {}
+        try:
+            stocks = json.load(fp)
+            stock = stocks[new_stock['ticker']]
+            return [stock, stocks]
+        except Exception as e:
+            return [None, stocks]
