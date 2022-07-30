@@ -1,11 +1,9 @@
 from bs4 import BeautifulSoup
 from decouple import config
-from scrapper.updater import update_stocks
+# from scrapper.updater import update_stocks
 import requests
-import asyncio
-
-# from api.serializers import StockSerializer
-
+from scrapper.update_json import compare_stock
+import os
 
 def fetch_url(url: str):
     resp = requests.request(method='GET', url=url)
@@ -24,7 +22,10 @@ def process_data(ticker_elements: list):
     for element in ticker_elements:
         if element.get('b') == "-":
             continue
-        stocks.append(process_ticker(element))
+        stock = process_ticker(element)
+        updated, created = compare_stock(stock)
+        if updated or created:
+            stocks.append(stock)
     return stocks
 
 
@@ -45,4 +46,7 @@ def main():
     raw_data = fetch_url(config("URL_V1"))
     ticker_elements = parse_data(raw_data)
     stocks = process_data(ticker_elements)
-    update_stocks(stocks)
+    if stocks:
+        print(stocks)
+        
+        # update_stocks(stocks)
