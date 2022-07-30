@@ -1,15 +1,15 @@
-from simple_history.utils import update_change_reason
-from stocks_v1.models import Stock
-import asyncio
-from django.shortcuts import get_object_or_404
-import requests
 from decouple import config
-
-headers = {
-    "Content-Type": "application/json",
-}
+from aiohttp import ClientSession
 
 
+async def update_stocks(update_list, create_list):
+    api_url = f"{config('DEV_URL')}/stocks/crud/"
+    if update_list:
+        data = {"stocks": update_list}
+        async with ClientSession() as session:
+            updated = await fetch_url(api_url, 'PUT', session, data)
+
+<<<<<<< HEAD
 def check_stock(ticker):
     try:
         stock = Stock.objects.get(ticker__iexact=ticker)
@@ -75,3 +75,17 @@ def compare_change(old_stock, new_stock):
     has_changed = float(
         old_stock.percentage_change) != new_stock['percentage_change']
     return has_changed
+=======
+    if create_list:
+        data = {"stocks": create_list}
+        async with ClientSession() as session:
+            created = await fetch_url(api_url, 'POST', session, data)
+    return True
+
+
+async def fetch_url(url: str, method: str, session: ClientSession, data, **kwargs):
+    resp = await session.request(method=method, url=url, json=data, **kwargs)
+    resp.raise_for_status()
+    stocks = await resp.text()
+    return stocks
+>>>>>>> develop

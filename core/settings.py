@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'livereload',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+    'simple_history',
     "rest_framework",
     "stocks_v1",
     # 'rest_framework.authtoken',
@@ -41,6 +42,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
     'livereload.middleware.LiveReloadScript',
 ]
 
