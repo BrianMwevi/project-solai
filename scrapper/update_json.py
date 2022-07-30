@@ -23,3 +23,19 @@ def compare_stock(new_stock):
     updated = update_stock(new_stock, stocks)
     return [updated, False]
 
+
+def create_stock(stock, stocks):
+    """ Create/adds a new stock into the json_stocks.json file.
+
+    :param stock: stock to create
+    :type stock: dict
+    :return True
+    :rtype: bool
+    """
+
+    stocks[stock['ticker']] = stock
+    stocks_file = os.getcwd() + '/scrapper/json_stocks.json'
+    with open(stocks_file, 'w') as fp:
+        json.dump(stocks, fp)
+        return True
+
