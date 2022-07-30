@@ -3,16 +3,15 @@ from aiohttp import ClientSession
 
 
 async def update_stocks(update_list, create_list):
-    api_url = f"{config('DEV_URL')}/stocks/crud/"
+    api_url = f"{config('PROD_URL')}/realtime/admin/"
     if update_list:
         data = {"stocks": update_list}
         async with ClientSession() as session:
-            updated = await fetch_url(api_url, 'PUT', session, data)
-
+            await fetch_url(api_url, 'PUT', session, data)
     if create_list:
         data = {"stocks": create_list}
         async with ClientSession() as session:
-            created = await fetch_url(api_url, 'POST', session, data)
+            await fetch_url(api_url, 'POST', session, data)
     return True
 
 
