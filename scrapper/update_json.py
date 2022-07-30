@@ -39,3 +39,15 @@ def create_stock(stock, stocks):
         json.dump(stocks, fp)
         return True
 
+
+def update_stock(new_stock, stocks):
+    """ Updates stock in json_stocks.json file 
+
+    :param new_stock: the most recent scrapped stock
+    :type new_stock: dict
+    :return: True
+    :rtype: bool
+    """
+
+    return create_stock(new_stock, stocks)
+
