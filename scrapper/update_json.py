@@ -24,7 +24,7 @@ def compare_stock(new_stock):
     return [updated, False]
 
 
-def create_stock(stock, stocks):
+def create_stock(new_stock, stocks):
     """ Create/adds a new stock into the json_stocks.json file.
 
     :param stock: stock to create
@@ -32,8 +32,11 @@ def create_stock(stock, stocks):
     :return True
     :rtype: bool
     """
-
-    stocks[stock['ticker']] = stock
+    old_stock = new_stock
+    old_stock['max_price'] = 0
+    old_stock['min_price'] = 0
+    stock = get_max_min_price(new_stock, old_stock)
+    stocks[new_stock['ticker']] = stock
     stocks_file = os.getcwd() + '/scrapper/json_stocks.json'
     with open(stocks_file, 'w') as fp:
         json.dump(stocks, fp)
@@ -48,7 +51,8 @@ def update_stock(new_stock, stocks):
     :return: True
     :rtype: bool
     """
-
+    old_stock = stocks[new_stock['ticker']]
+    new_stock = get_max_min_price(new_stock, old_stock)
     return create_stock(new_stock, stocks)
 
 
@@ -70,3 +74,22 @@ def get_stocks(new_stock):
             return [stock, stocks]
         except Exception as e:
             return [None, stocks]
+
+# TODO: add function docstring
+def get_max_min_price(new_stock, old_stock):
+    price = new_stock['price']
+    open_price = new_stock['open_price']
+
+    max_price = old_stock['max_price']
+    min_price = old_stock['min_price']
+
+    if max_price < price and price > open_price:
+        new_stock['max_price'] = price
+    elif max_price < open_price:
+        new_stock['max_price'] = open_price
+
+    if min_price > price and price < open_price:
+        new_stock['min_price'] = price
+    elif min_price > open_price:
+        new_stock['min_price'] = open_price
+    return new_stock
