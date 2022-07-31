@@ -4,7 +4,7 @@ from aiohttp import ClientSession
 
 
 async def update_stocks(update_list, create_list):
-    api_url = f"{config('DEV_URL')}/realtime/admin/"
+    api_url = f"{config('PROD_URL')}/realtime/admin/"
     if update_list:
         custom_print(f"Updating: {len(update_list)} stock(s)...")
         data = {"stocks": update_list}
