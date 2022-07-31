@@ -23,20 +23,25 @@ class AdminApiView(views.APIView):
 
     def post(self, request):
         stocks = request.data['stocks']
+        created_stocks = {"stocks": []}
         for stock in stocks:
             serializer = StockSerializer(data=stock)
             if serializer.is_valid():
                 created_stock = serializer.save()
+                created_stocks['stocks'].append(serializer.data)
                 update_change_reason(created_stock, "Genesis Stock")
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(created_stocks, status=status.HTTP_201_CREATED)
 
     def put(self, request, format=None):
         stocks = request.data['stocks']
+        updated_stocks = {"stocks": []}
         for stock in stocks:
             instance = Stock.objects.get(ticker=stock['ticker'])
             serializer = StockSerializer(
                 instance, data=stock, context={'request': request})
             if serializer.is_valid():
                 updated_stock = serializer.save()
+                updated_stocks['stocks'].append(serializer.data)
                 update_change_reason(updated_stock, "Update")
-        return Response(serializer.data)
+        return Response(updated_stocks)
