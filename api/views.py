@@ -40,7 +40,7 @@ class AdminApiView(views.APIView):
             instance = Stock.objects.get(ticker=stock['ticker'])
             serializer = StockSerializer(
                 instance, data=stock, context={'request': request})
-            if serializer.is_valid():
+            if stock['percentage_change'] != float(instance.percentage_change) and serializer.is_valid():
                 updated_stock = serializer.save()
                 updated_stocks['stocks'].append(serializer.data)
                 update_change_reason(updated_stock, "Update")
