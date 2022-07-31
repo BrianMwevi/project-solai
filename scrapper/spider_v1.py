@@ -1,5 +1,4 @@
 import asyncio
-import random
 from bs4 import BeautifulSoup
 from decouple import config
 import requests
@@ -44,7 +43,7 @@ def process_ticker(element):
     change = change*-1 if change_direction == 'l' else change
     open_price = stock['open_price'] = round(price - change, 2)
     stock['percentage_change'] = round(
-        change*100/open_price, 2) + round(random.randint(1, 4), 1)
+        change*100/open_price, 2)
     return stock
 
 
@@ -54,5 +53,3 @@ def main():
     update_list, create_list = process_data(ticker_elements)
     if create_list or update_list:
         asyncio.run(update_stocks(update_list, create_list))
-
-
