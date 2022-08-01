@@ -5,13 +5,13 @@ from aiohttp import ClientSession
 
 async def update_stocks(update_list, create_list):
     api_url = f"{config('PROD_URL')}/realtime/admin/"
-    if update_list:
+    if update_list is not None:
         custom_print(f"Updating: {len(update_list)} stock(s)...")
         data = {"stocks": update_list}
         async with ClientSession() as session:
             stocks = await fetch_url(api_url, 'PUT', session, data)
             custom_print(f"Updated: {len(stocks['stocks'])} stock(s)\n")
-    if create_list:
+    if create_list is not None:
         custom_print(f"Creating: {len(create_list)} stock(s)...")
         data = {"stocks": create_list}
         async with ClientSession() as session:
