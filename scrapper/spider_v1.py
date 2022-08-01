@@ -51,5 +51,7 @@ def main():
     raw_data = fetch_url(config("URL_V1"))
     ticker_elements = parse_data(raw_data)
     update_list, create_list = process_data(ticker_elements)
-    if create_list or update_list:
-        asyncio.run(update_stocks(update_list, create_list))
+    if create_list:
+        asyncio.run(update_stocks(None, create_list))
+    if update_list:
+        asyncio.run(update_stocks(update_list, None))
