@@ -13,18 +13,17 @@ def compare_stock(new_stock):
     :rtype: array of bool
     """
 
-    old_stock, stocks = get_stocks(new_stock)
+    old_stock = get_stock(new_stock['ticker'])
     if old_stock is None:
-        created = create_stock(new_stock, stocks)
-        return [False, created]
+        created = create_stock(new_stock)
+        return (False, created)
     if old_stock['percentage_change'] == new_stock['percentage_change']:
-        return [False, False]
+        return (False, False)
+    updated = update_stock(new_stock)
+    return (updated, False)
 
-    updated = update_stock(new_stock, stocks)
-    return [updated, False]
 
-
-def create_stock(new_stock, stocks):
+def create_stock(new_stock):
     """ Create/adds a new stock into the stocks.json file.
 
     :param stock: stock to create
@@ -32,18 +31,26 @@ def create_stock(new_stock, stocks):
     :return True
     :rtype: bool
     """
-    old_stock = new_stock
-    old_stock['max_price'] = 0
-    old_stock['min_price'] = 0
-    stock = get_max_min_price(new_stock, old_stock)
-    stocks[new_stock['ticker']] = stock
+    price = new_stock['price']
+    open_price = new_stock['open_price']
+    max_price,  min_price = get_min_max(price, open_price)
+    new_stock['max_price'] = max_price
+    new_stock['min_price'] = min_price
+    new_stock['prev_price'] = open_price
+    return save_stock(new_stock)
+
+
+def save_stock(stock):
+    """Saves a new stock to json file"""
+    stocks = get_stocks()
+    stocks[stock['ticker']] = stock
     stocks_file = os.getcwd() + '/scrapper/stocks.json'
     with open(stocks_file, 'w') as fp:
         json.dump(stocks, fp)
         return True
 
 
-def update_stock(new_stock, stocks):
+def update_stock(new_stock):
     """ Updates stock in stocks.json file 
 
     :param new_stock: the most recent scrapped stock
@@ -51,47 +58,55 @@ def update_stock(new_stock, stocks):
     :return: True
     :rtype: bool
     """
-    old_stock = stocks[new_stock['ticker']]
-    new_stock = get_max_min_price(new_stock, old_stock)
-    return create_stock(new_stock, stocks)
+
+    old_stock = get_stock(new_stock['ticker'])
+    to_update = set_pricing(new_stock, old_stock)
+    return save_stock(to_update)
 
 
-def get_stocks(new_stock):
-    """ Gets specific stock and all available stocks from stocks.json file
-
-    :param new_stock: the most recent scrapped stock
-    :type new_stock: dict
-    :return specific stock and all available stocks
-    :rtype: dict|NoneType
-    """
+def get_stock(ticker):
 
     stocks_file = os.getcwd() + '/scrapper/stocks.json'
     with open(stocks_file, 'r') as fp:
-        stocks = {}
         try:
             stocks = json.load(fp)
-            stock = stocks[new_stock['ticker']]
-            return [stock, stocks]
+            return stocks[ticker]
         except Exception as e:
-            return [None, stocks]
-
-# TODO: add function docstring
+            return None
 
 
-def get_max_min_price(new_stock, old_stock):
+def get_stocks():
+
+    stocks_file = os.getcwd() + '/scrapper/stocks.json'
+    with open(stocks_file, 'r') as fp:
+        try:
+            stocks = json.load(fp)
+            return stocks
+        except Exception as e:
+            return {}
+
+
+def set_pricing(new_stock, old_stock=None):
+    """Sets the prices of a given stock"""
+
     price = new_stock['price']
     open_price = new_stock['open_price']
+    max_price, min_price = get_min_max(price, open_price)
+    old_stock.update(new_stock)
 
-    max_price = old_stock['max_price']
-    min_price = old_stock['min_price']
+    if max_price > old_stock['max_price']:
+        old_stock['max_price'] = max_price
 
-    if max_price < price and price > open_price:
-        new_stock['max_price'] = price
-    elif max_price < open_price:
-        new_stock['max_price'] = open_price
+    if min_price < old_stock['min_price']:
+        old_stock['min_price'] = min_price
 
-    if min_price > price and price < open_price:
-        new_stock['min_price'] = price
-    elif min_price > open_price:
-        new_stock['min_price'] = open_price
-    return new_stock
+    old_stock['prev_price'] = old_stock['price']
+    return old_stock
+
+
+def get_min_max(price, open_price):
+    """Compares the difference between the current and opening price"""
+
+    if price > open_price:
+        return [price, open_price]
+    return [open_price, price]
