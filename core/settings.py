@@ -27,10 +27,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "stocks_v1",
     'drf_yasg',
-    # 'rest_framework.authtoken',
     "corsheaders",
-    'api',
-    # 'knox',
+    "api.apps.ApiConfig",
+    'accounts.apps.AccountsConfig',
 
 ]
 
@@ -145,10 +144,8 @@ USE_TZ = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-LOGIN_REDIRECT_URL = 'api'
-LOGOUT_REDIRECT_URL = 'api'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+AUTH_USER_MODEL = "accounts.User"
 
 CORS_ALLOWED_ORIGINS = [
 
