@@ -1,3 +1,4 @@
+from multiprocessing.managers import BaseManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
@@ -55,6 +56,20 @@ class InvestorManager(BaseUserManager):
 class Investor(User):
     base_role = User.Role.INVESTOR
     investor = InvestorManager()
+
+    class Meta:
+        proxy = True
+
+
+class AdminManager(BaseManager):
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        return queryset.filter(role=User.Role.ADMIN)
+
+
+class Admin(User):
+    base_role = User.Role.ADMIN
+    admin = AdminManager()
 
     class Meta:
         proxy = True
