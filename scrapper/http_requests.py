@@ -4,7 +4,7 @@ from aiohttp import ClientSession
 
 
 def get_url():
-    api_url = f"{config('PROD_URL')}/realtime/admin/"
+    api_url = f"{config('DEV_URL')}/realtime/admin/"
     return api_url
 
 
