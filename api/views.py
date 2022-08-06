@@ -1,25 +1,53 @@
 from simple_history.utils import update_change_reason
+from accounts.throttles import DeveloperThrottle, InvestorThrottle, TraderThrottle
 from api.serializers import StockSerializer
 from rest_framework import views, generics
 from stocks_v1.models import Stock
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from accounts.permissions import IsAdmin, IsDeveloper, IsInvestor, IsTrader
 
 
 class RealTimeStocks(generics.ListAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+    permission_classes = [IsAuthenticated, IsAdmin |
+                          IsInvestor | IsTrader | IsDeveloper]
+
+    def get_throttles(self):
+        throttle_classes = []
+        if self.request.user.role == "DEVELOPER":
+            throttle_classes = [DeveloperThrottle]
+        elif self.request.user.role == "INVESTOR":
+            throttle_classes = [InvestorThrottle]
+        elif self.request.user.role == "TRADER":
+            throttle_classes = [TraderThrottle]
+        return [throttle() for throttle in throttle_classes]
 
 
 class HistoricalStocks(generics.ListAPIView):
     queryset = Stock.history.all()
     serializer_class = StockSerializer
+    permission_classes = [IsAuthenticated, IsAdmin |
+                          IsInvestor | IsTrader | IsDeveloper]
+
+    def get_throttles(self):
+        throttle_classes = []
+        if self.request.user.role == "DEVELOPER":
+            throttle_classes = [DeveloperThrottle]
+        elif self.request.user.role == "INVESTOR":
+            throttle_classes = [InvestorThrottle]
+        elif self.request.user.role == "TRADER":
+            throttle_classes = [TraderThrottle]
+        return [throttle() for throttle in throttle_classes]
 
     def get_queryset(self):
         return self.queryset.filter(ticker=self.request.GET.get('ticker'))
 
 
 class AdminApiView(views.APIView):
+    # permission_classes = [IsAdmin]
 
     def post(self, request):
         stocks = request.data['stocks']
