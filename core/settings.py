@@ -49,12 +49,22 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         # 'knox.auth.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'accounts.throttles.TraderThrottle',
+        'accounts.throttles.DeveloperThrottle',
+        'accounts.throttles.InvestorThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'investor': '15/hour',
+        'developer': '60/hour',
+        'trader': '15/hour',
+    },
     # 'DEFAULT_RENDERER_CLASSES': (
     #     'rest_framework.renderers.JSONRenderer',
     # ),
@@ -86,7 +96,6 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database Configs
-
 # development
 if config('MODE') == "dev":
     DATABASES = {
@@ -147,13 +156,13 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "accounts.User"
 
-CORS_ALLOWED_ORIGINS = [
-
-    "http://localhost:4200",
-    "http://127.0.0.1:8000",
-    "https://open-stocks.herokuapp.com",
-    "https://brianmwevi.github.io",
-]
+# CORS_ALLOWED_ORIGINS = [
+# "http://localhost:4200",
+# "http://127.0.0.1:8000",
+# "https://open-stocks.herokuapp.com",
+# "https://brianmwevi.github.io",
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Heroku: Update database configuration from $DATABASE_URL.
 db_from_env = dj_database_url.config(conn_max_age=500)
