@@ -1,4 +1,4 @@
-from rest_framework.throttling import UserRateThrottle, BaseThrottle
+from rest_framework.throttling import UserRateThrottle
 
 
 class TraderThrottle(UserRateThrottle):
@@ -6,14 +6,8 @@ class TraderThrottle(UserRateThrottle):
 
 
 class DeveloperThrottle(UserRateThrottle):
-    scope = 'trader'
+    scope = 'developer'
 
 
-class InvestorThrottle(BaseThrottle):
-    def allow_request(self, request, view):
-        whitelist = "127.0.0.1:8000"
-        incoming = request.META.get("HTTP_HOST")
-        print(whitelist, incoming)
-        if request.user.role == 'INVESTOR' and whitelist == incoming:
-            return True
-        return False
+class InvestorThrottle(UserRateThrottle):
+    scope = 'investor'
