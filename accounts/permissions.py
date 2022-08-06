@@ -9,7 +9,7 @@ class IsAdmin(permissions.BasePermission):
 
 class IsInvestor(permissions.BasePermission):
     def has_permission(self, request, view):
-        return perform_check(request, "IVESTOR")
+        return perform_check(request, "INVESTOR")
 
 
 class IsTrader(permissions.BasePermission):
@@ -23,6 +23,4 @@ class IsDeveloper(permissions.BasePermission):
 
 
 def perform_check(request, role):
-    if not request.user.is_authenticated:
-        return False
     return request.user.role == role
