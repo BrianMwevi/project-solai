@@ -12,10 +12,15 @@ class User(AbstractUser):
 
     base_role = Role.INVESTOR
     role = models.CharField(max_length=50, choices=Role.choices)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.role = self.base_role
+            if self.base_role == "ADMIN":
+                self.is_superuser = True
+                self.is_staff = True
             return super().save(*args, **kwargs)
 
 
