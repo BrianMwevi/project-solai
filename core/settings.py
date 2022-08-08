@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     # 'rest_framework.authtoken',
     "corsheaders",
+    'stocks_websockets',
     'api',
     # 'knox',
 

@@ -1,9 +1,12 @@
 import asyncio
+import json
 from bs4 import BeautifulSoup
 from decouple import config
 import requests
 from scrapper.updater import compare_stock
 from scrapper.http_requests import create_stocks, update_stocks
+from stocks_websockets.app import users
+import websockets
 
 
 def fetch_url(url: str):
@@ -52,6 +55,9 @@ def main():
     ticker_elements = parse_data(raw_data)
     update_list, create_list = process_data(ticker_elements)
     if create_list:
+        websockets.broadcast(users, f"Create {len(create_list)}")
         asyncio.run(create_stocks(create_list))
+
     if update_list:
+        websockets.broadcast(users, f"Update {len(update_list)}")
         asyncio.run(update_stocks(update_list))
