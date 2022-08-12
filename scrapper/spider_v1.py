@@ -1,12 +1,10 @@
 import asyncio
-import json
 from bs4 import BeautifulSoup
 from decouple import config
 import requests
 from scrapper.updater import compare_stock
-from scrapper.http_requests import create_stocks, update_stocks
-from stocks_websockets.app import users
-import websockets
+from scrapper.http_requests import create_stocks, update_clients, update_stocks
+import random
 
 
 def fetch_url(url: str):
@@ -30,9 +28,11 @@ def process_data(ticker_elements: list):
         stock = process_ticker(element)
         updated, created = compare_stock(stock)
         if updated:
-            update_list.append(stock)
+            asyncio.run(update_clients(updated))
+            update_list.append(updated)
         if created:
-            create_list.append(stock)
+            asyncio.run(update_clients(created))
+            create_list.append(created)
     return [update_list, create_list]
 
 
@@ -55,9 +55,15 @@ def main():
     ticker_elements = parse_data(raw_data)
     update_list, create_list = process_data(ticker_elements)
     if create_list:
-        websockets.broadcast(users, f"Create {len(create_list)}")
         asyncio.run(create_stocks(create_list))
 
     if update_list:
-        websockets.broadcast(users, f"Update {len(update_list)}")
         asyncio.run(update_stocks(update_list))
+
+
+def random_gen():
+    num = round(random.randint(1, 2), 1)
+    if num > 0.5:
+        return 1
+    return 0
+
