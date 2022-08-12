@@ -36,8 +36,9 @@ class AdminApiView(views.APIView):
     def put(self, request, format=None):
         stocks = request.data['stocks']
         updated_stocks = {"stocks": []}
+        queryset = Stock.objects.all()
         for stock in stocks:
-            instance = Stock.objects.get(ticker=stock['ticker'])
+            instance = queryset.get(ticker=stock['ticker'])
             serializer = StockSerializer(
                 instance, data=stock, context={'request': request})
             if stock['percentage_change'] != float(instance.percentage_change) and serializer.is_valid():
