@@ -1,4 +1,5 @@
 import json
+from multiprocessing.spawn import old_main_modules
 import os
 
 
@@ -47,7 +48,7 @@ def save_stock(stock):
     stocks_file = os.getcwd() + '/scrapper/stocks.json'
     with open(stocks_file, 'w') as fp:
         json.dump(stocks, fp)
-        return True
+        return stock
 
 
 def update_stock(new_stock):
