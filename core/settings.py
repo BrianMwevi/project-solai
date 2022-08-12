@@ -16,6 +16,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -24,15 +25,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'simple_history',
-    "rest_framework",
-    "stocks_v1",
+    'rest_framework',
+    'stocks_v1',
     'drf_yasg',
-    # 'rest_framework.authtoken',
-    "corsheaders",
-    'stocks_websockets',
+    'corsheaders',
+    'stocks_channel',
     'api',
-    # 'knox',
-
 ]
 
 MIDDLEWARE = [
@@ -85,7 +83,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.asgi.application'
 
+# Channels layer configuration for group websocket broadcast
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database Configs
 
