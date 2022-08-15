@@ -12,7 +12,7 @@ class StockConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, code):
-        self.channel_layer.group_discard(
+        await self.channel_layer.group_discard(
             "stock_clients", self.channel_name)
 
     async def client_message(self, event):
