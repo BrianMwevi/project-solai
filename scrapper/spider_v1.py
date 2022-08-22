@@ -1,6 +1,7 @@
 import asyncio
 from bs4 import BeautifulSoup
 from decouple import config
+from collections import OrderedDict
 import requests
 from scrapper.updater import compare_stock
 from scrapper.http_requests import create_stocks, update_clients, update_stocks
@@ -38,15 +39,15 @@ def process_data(ticker_elements: list):
 
 def process_ticker(element):
     """Describe the acronym symbols"""
-    stock = {}
+    stock = OrderedDict()
     stock['ticker'] = element.get('a')
     price = stock['price'] = float(element.get('b').replace(',', ''))
-    change = float(element.get('d')) if element.get('d') != None else 0
+    change = float(element.get('d')) if element.get('d') != None else 0.00
     change_direction = element.get('f')
     change = change*-1 if change_direction == 'l' else change
-    open_price = stock['open_price'] = round(price - change, 2)
-    stock['percentage_change'] = round(
-        change*100/open_price, 2)
+    open_price = stock['open_price'] = float(round(price - change, 2))
+    stock['percentage_change'] = float(round(
+        (change*100/open_price)+random_gen(), 2))
     return stock
 
 
@@ -54,16 +55,13 @@ def main():
     raw_data = fetch_url(config("URL_V1"))
     ticker_elements = parse_data(raw_data)
     update_list, create_list = process_data(ticker_elements)
-    if create_list:
-        asyncio.run(create_stocks(create_list))
+    # if create_list:
+    #     asyncio.run(create_stocks(create_list))
 
-    if update_list:
-        asyncio.run(update_stocks(update_list))
+    # if update_list:
+    #     asyncio.run(update_stocks(update_list))
 
 
 def random_gen():
-    num = round(random.randint(1, 2), 1)
-    if num > 0.5:
-        return 1
-    return 0
-
+    num = random.randint(0, 4)
+    return num
