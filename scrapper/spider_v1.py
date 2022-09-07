@@ -46,7 +46,7 @@ def process_ticker(element):
     change = change*-1 if change_direction == 'l' else change
     open_price = stock['open_price'] = round(price - change, 2)
     stock['percentage_change'] = round(
-        change*100/open_price, 2)
+        (change*100/open_price), 2)
     return stock
 
 
@@ -62,8 +62,5 @@ def main():
 
 
 def random_gen():
-    num = round(random.randint(1, 2), 1)
-    if num > 0.5:
-        return 1
-    return 0
-
+    num = random.randint(1, 2)
+    return num
