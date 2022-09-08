@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'simple_history',
     "rest_framework",
     "stocks_v1",
+    "updater",
+    "spider",
     'drf_yasg',
     # 'rest_framework.authtoken',
     "corsheaders",

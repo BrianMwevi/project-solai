@@ -44,7 +44,7 @@ def save_stock(stock):
     """Saves a new stock to json file"""
     stocks = get_stocks()
     stocks[stock['ticker']] = stock
-    stocks_file = os.getcwd() + '/scrapper/stocks.json'
+    stocks_file = os.getcwd() + '/updater/stocks.json'
     with open(stocks_file, 'w') as fp:
         json.dump(stocks, fp)
         return True
@@ -66,7 +66,7 @@ def update_stock(new_stock):
 
 def get_stock(ticker):
 
-    stocks_file = os.getcwd() + '/scrapper/stocks.json'
+    stocks_file = os.getcwd() + '/updater/stocks.json'
     with open(stocks_file, 'r') as fp:
         try:
             stocks = json.load(fp)
@@ -77,7 +77,7 @@ def get_stock(ticker):
 
 def get_stocks():
 
-    stocks_file = os.getcwd() + '/scrapper/stocks.json'
+    stocks_file = os.getcwd() + '/updater/stocks.json'
     with open(stocks_file, 'r') as fp:
         try:
             stocks = json.load(fp)
