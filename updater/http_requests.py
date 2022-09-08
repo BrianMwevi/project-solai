@@ -3,7 +3,7 @@ from decouple import config
 from aiohttp import ClientSession
 
 
-class StockUpdater:
+class StocksController:
 
     async def create_stocks(self, data):
         self.logger(f"Creating {len(data['stocks'])} stock(s)...")
