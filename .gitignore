@@ -5,7 +5,6 @@ __pycache__/
 
 # C extensions
 *.so
-
 # Heroku deployment
 deploy.sh
 
@@ -131,4 +130,6 @@ json_stocks.json
 
 # Pyre type checker
 .pyre/
+
+stocks.json
 feedback.py

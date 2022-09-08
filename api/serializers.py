@@ -3,12 +3,12 @@ from stocks_v1.models import Stock
 
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='stock-detail')
+    # url = serializers.HyperlinkedIdentityField(view_name='admin-detail')
 
     class Meta:
         model = Stock
         fields = [
-            'url',
+            # 'url',
             'id',
             'category',
             'name',

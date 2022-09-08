@@ -2,8 +2,8 @@ import asyncio
 from bs4 import BeautifulSoup
 from decouple import config
 import requests
-from scrapper.update_json import compare_stock
-from scrapper.updater import update_stocks
+from scrapper.updater import compare_stock
+from scrapper.http_requests import create_stocks, update_stocks
 
 
 def fetch_url(url: str):
@@ -51,5 +51,7 @@ def main():
     raw_data = fetch_url(config("URL_V1"))
     ticker_elements = parse_data(raw_data)
     update_list, create_list = process_data(ticker_elements)
-    if create_list or update_list:
-        asyncio.run(update_stocks(update_list, create_list))
+    if create_list:
+        asyncio.run(create_stocks(create_list))
+    if update_list:
+        asyncio.run(update_stocks(update_list))
