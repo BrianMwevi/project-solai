@@ -21,7 +21,6 @@ class StocksController:
     @classmethod
     async def send_request(cls, method, data, operation, **kwargs):
         async with ClientSession() as session:
-            print("Method: ", method)
             resp = await session.request(method=method, url=cls.url, json=data, **kwargs)
             resp.raise_for_status()
             stocks = json.loads(await resp.text())
