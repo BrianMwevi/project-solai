@@ -3,14 +3,15 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from decouple import config
 from updater.http_requests import StocksController
-from scrapper.updater import compare_stock
+from updater.compare import compare_stock
 
 
-async def fetch(url: str, session: ClientSession, **kwargs):
-    resp = await session.request(method='GET', url=url, **kwargs)
-    resp.raise_for_status()
-    xml_data = await resp.text()
-    return xml_data
+async def fetch(url: str, **kwargs):
+    async with ClientSession() as session:
+        resp = await session.request(method='GET', url=url, **kwargs)
+        resp.raise_for_status()
+        xml_data = await resp.text()
+        return xml_data
 
 
 async def parse_data(raw_data):
@@ -26,7 +27,7 @@ async def process_data(ticker_elements: list):
         for element in ticker_elements:
             if element.get('b') == "-":
                 continue
-            stock = process_ticker(element)
+            stock = await process_ticker(element)
             updated, created = compare_stock(stock)
             if created:
                 to_create.append(stock)
@@ -43,7 +44,7 @@ async def process_ticker(element):
     change_direction = element.get('f')
     change = change*-1 if change_direction == 'l' else change
     open_price = stock['open_price'] = round(price - change, 2)
-    stock['change'] = round(change*100/open_price, 2)
+    stock['percentage_change'] = round(change*100/open_price, 2)
     return stock
 
 
@@ -51,9 +52,13 @@ async def main():
     raw_data = await fetch(config("URL_V1"))
     ticker_elements = await parse_data(raw_data)
     to_create, to_update = await process_data(ticker_elements)
-    task2 = asyncio.create_task(StocksController.create_stocks(to_create))
-    task1 = asyncio.create_task(
-        StocksController.update_stocks(to_update))
+    if to_create['stocks']:
+        task1 = asyncio.create_task(StocksController.create_stocks(to_create))
+        await task1
+    if to_update['stocks']:
+        task2 = asyncio.create_task(
+            StocksController.update_stocks(to_update))
+        await task2
 
 
 def scraper():
