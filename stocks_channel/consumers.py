@@ -1,5 +1,3 @@
-# chat/consumers.py
-from ipaddress import ip_address
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
