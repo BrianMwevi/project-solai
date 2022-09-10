@@ -24,8 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'simple_history',
+<<<<<<< HEAD
     'rest_framework',
     'stocks_v1',
+=======
+    "rest_framework",
+    "stocks_v1",
+    "updater",
+    "spider",
+>>>>>>> ft-channels
     'drf_yasg',
     'corsheaders',
     'stocks_channel',
