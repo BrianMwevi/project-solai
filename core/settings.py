@@ -21,7 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'livereload',
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'simple_history',
@@ -43,7 +42,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    'livereload.middleware.LiveReloadScript',
 ]
 
 REST_FRAMEWORK = {
