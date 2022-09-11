@@ -25,7 +25,6 @@ dj-database-url==0.5.0
 Django==3.2
 django-cors-headers==3.13.0
 django-heroku==0.3.1
-django-livereload-server==0.4
 django-simple-history==3.0.0
 djangorestframework==3.13.1
 drf-yasg==1.21.3
@@ -69,7 +68,6 @@ tzdata==2022.1
 tzlocal==2.1
 uritemplate==4.1.1
 urllib3==1.26.9
-websockets==10.3
 whitenoise==6.2.0
 yarl==1.7.2
 zope.interface==5.4.0
