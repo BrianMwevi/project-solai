@@ -162,12 +162,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "*"
-    #     "http://localhost:3000",
-    #     "http://127.0.0.1:8000",
-    #     "https://open-stocks.herokuapp.com",
-    #     "https://web-production-7794.up.railway.app",
-    #     "https://brianmwevi.github.io",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000",
+        "https://open-stocks.herokuapp.com",
+        "https://web-production-7794.up.railway.app",
+        "https://brianmwevi.github.io",
 ]
 
 # Heroku: Update database configuration from $DATABASE_URL.
