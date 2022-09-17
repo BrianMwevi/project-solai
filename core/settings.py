@@ -23,11 +23,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'simple_history',
     'rest_framework',
-    'stocks_v1',
     'drf_yasg',
+    'accounts',
+    'api',
     'corsheaders',
     'stocks_channel',
-    'api',
+    'stocks_v1',
 ]
 
 MIDDLEWARE = [
