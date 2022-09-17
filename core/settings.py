@@ -80,6 +80,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
+
 # Channels layer configuration for group websocket broadcast
 CHANNEL_LAYERS = {
     'default': {
