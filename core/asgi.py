@@ -7,7 +7,7 @@ from channels.auth import AuthMiddlewareStack
 from stocks_channel import consumers
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-django_asgi_app = get_asgi_application()
+# django_asgi_app = get_asgi_application()
 
 # import stocks_channel.routing
 
