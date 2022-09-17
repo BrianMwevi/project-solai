@@ -168,6 +168,7 @@ CORS_ALLOWED_ORIGINS = [
         "https://open-stocks.herokuapp.com",
         "https://web-production-7794.up.railway.app",
         "https://brianmwevi.github.io",
+        "https://6325e22d41b171616f238d4e--isnt-brianmwevi-awesome.netlify.app",
 ]
 
 # Heroku: Update database configuration from $DATABASE_URL.
