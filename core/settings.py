@@ -1,8 +1,7 @@
 from decouple import config, Csv
 from pathlib import Path
 import os
-import dj_database_url
-import django_heroku
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,28 +94,28 @@ CHANNEL_LAYERS = {
 # Database Configs
 
 # development
-if config('MODE') == "dev":
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-        }
-    }
-# production
-else:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=config('DATABASE_URL')
-        )
-    }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+# if config('MODE') == "dev":
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': config('DB_NAME'),
+#             'USER': config('DB_USER'),
+#             'PASSWORD': config('DB_PASSWORD'),
+#         }
 #     }
+# # production
+# else:
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('DATABASE_URL')
+#     )
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
@@ -164,14 +163,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
-    "https://open-stocks.herokuapp.com",
-    "https://web-production-7794.up.railway.app",
-    "https://brianmwevi.github.io",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000",
+        "https://open-stocks.herokuapp.com",
+        "https://web-production-7794.up.railway.app",
+        "https://brianmwevi.github.io",
 ]
 
 # Heroku: Update database configuration from $DATABASE_URL.
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-django_heroku.settings(locals())
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
+# django_heroku.settings(locals())
