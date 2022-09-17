@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'simple_history',
     'rest_framework',
     'drf_yasg',
-    'accounts',
     'api',
     'corsheaders',
     'stocks_channel',
