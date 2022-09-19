@@ -30,7 +30,7 @@ async def process_data(ticker_elements: list):
             stock = await process_ticker(element)
             updated, created = compare_stock(stock)
             if updated or created:
-                StocksController.update_clients(stock)
+                await StocksController.update_clients(stock)
             if created:
                 to_create.append(stock)
             if updated:
