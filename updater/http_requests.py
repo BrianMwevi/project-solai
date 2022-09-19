@@ -29,10 +29,11 @@ class StocksController:
                 f"{operation} {len(stocks['stocks'])} stock(s)\n")
             return stocks
 
-    async def update_clients(data):
+    async def update_clients(stock):
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
-            {"type": "client_message", data: data}
+            "stock_clients",
+            {"type": "client_message", "data": stock}
         )
 
     def logger(text):
