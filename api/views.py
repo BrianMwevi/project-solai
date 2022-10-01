@@ -1,7 +1,7 @@
 from simple_history.utils import update_change_reason
-from api.serializers import StockSerializer
-from rest_framework import views, generics
-from stocks_v1.models import Stock
+from api.serializers import StockSerializer, TrackerSerializer
+from rest_framework import views, generics, viewsets
+from stocks_v1.models import Stock, Tracker
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -46,3 +46,11 @@ class AdminApiView(views.APIView):
                 updated_stocks['stocks'].append(serializer.data)
                 update_change_reason(updated_stock, "Update")
         return Response(updated_stocks)
+
+
+class TrackerViewSet(viewsets.ModelViewSet):
+    queryset = Tracker.objects.all()
+    serializer_class = TrackerSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(investor=self.request.user)

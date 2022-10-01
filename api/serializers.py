@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stocks_v1.models import Stock
+from stocks_v1.models import Stock, Tracker
 
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
@@ -22,3 +22,11 @@ class StockSerializer(serializers.HyperlinkedModelSerializer):
             'min_price',
             'updated_at',
         ]
+
+
+class TrackerSerializer(serializers.ModelSerializer):
+    stock = StockSerializer(read_only=True)
+
+    class Meta:
+        model = Tracker
+        exclude = ('completed',)
