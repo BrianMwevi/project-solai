@@ -1,3 +1,4 @@
+from curses import raw
 from simple_history.utils import update_change_reason
 from api.serializers import StockSerializer, TrackerSerializer
 from rest_framework import views, generics, viewsets
@@ -54,4 +55,13 @@ class TrackerViewSet(viewsets.ModelViewSet):
     serializer_class = TrackerSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(investor=self.request.user)
+        return self.queryset.filter(investors=self.request.user)
+
+    def perform_create(self, serializer):
+        ticker = self.request.data['stock']
+        quote_price = float(self.request.data['quote_price'])
+        stock = Tracker.check_stock(ticker, quote_price)
+
+        if not stock:
+            stock = serializer.save()
+        stock.investors.add(self.request.user)
