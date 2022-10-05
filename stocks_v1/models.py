@@ -67,6 +67,18 @@ class Tracker(models.Model):
         return f"{self.stock.ticker}: {self.quote_price}"
 
 
+class Notification(models.Model):
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.CharField(max_length=255)
+    viewed = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+    viewed_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.content
+
+
 @receiver(pre_save, sender=Tracker)
 def set_at_tracking(sender, instance, **kwargs):
     instance.at_tracking = instance.stock.price
