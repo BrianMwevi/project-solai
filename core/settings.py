@@ -3,14 +3,12 @@ from decouple import config, Csv
 from pathlib import Path
 import os
 
-import django_heroku
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = config('SECRET_KEY')
+ALLOWED_HOSTS = ["*"]
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
@@ -25,11 +23,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'simple_history',
     'rest_framework',
-    'stocks_v1',
     'drf_yasg',
+    'api',
     'corsheaders',
     'stocks_channel',
-    'api',
+    'stocks_v1',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +81,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
+
 # Channels layer configuration for group websocket broadcast
 CHANNEL_LAYERS = {
     'default': {
@@ -112,6 +111,7 @@ else:
             default=config('DATABASE_URL')
         )
     }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -148,6 +148,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -158,15 +161,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-
     "http://localhost:3000",
     "http://127.0.0.1:8000",
     "https://open-stocks.herokuapp.com",
     "https://web-production-7794.up.railway.app",
     "https://brianmwevi.github.io",
+    "https://6325e22d41b171616f238d4e--isnt-brianmwevi-awesome.netlify.app",
 ]
 
 # Heroku: Update database configuration from $DATABASE_URL.
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)

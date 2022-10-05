@@ -27,7 +27,7 @@ def save_stock(stock):
     """Saves a new stock to json file"""
     stocks = get_stocks()
     stocks[stock['ticker']] = stock
-    stocks_file = os.getcwd() + '/updater/stocks.json'
+    stocks_file = get_json_file()
     with open(stocks_file, 'w') as fp:
         json.dump(stocks, fp)
         return True
@@ -41,8 +41,16 @@ def update_stock(new_stock):
     return saved_stock
 
 
+def get_json_file():
+    file_path = '/updater/stocks.json'
+    if not os.path.exists(os.getcwd() + file_path):
+        f = open(os.getcwd() + file_path, "x")
+    return os.getcwd() + file_path
+
+
 def get_stock(ticker):
-    stocks_file = os.getcwd() + '/updater/stocks.json'
+
+    stocks_file = get_json_file()
     with open(stocks_file, 'r') as fp:
         try:
             stocks = json.load(fp)
@@ -53,7 +61,7 @@ def get_stock(ticker):
 
 def get_stocks():
 
-    stocks_file = os.getcwd() + '/updater/stocks.json'
+    stocks_file = get_json_file()
     with open(stocks_file, 'r') as fp:
         try:
             stocks = json.load(fp)
