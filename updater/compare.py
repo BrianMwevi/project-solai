@@ -3,16 +3,6 @@ import os
 
 
 def compare_stock(new_stock):
-    """ Checks if stock has changed or not
-
-    :param new_stock: most recent scrapped stock to compare with old stock
-    :type new_stock: dict
-    :return True if stock has been updated, False otherwise
-    :rtype: array of bool
-    :return True if stock has been created, False otherwise
-    :rtype: array of bool
-    """
-
     old_stock = get_stock(new_stock['ticker'])
     if old_stock is None:
         created = create_stock(new_stock)
@@ -24,13 +14,6 @@ def compare_stock(new_stock):
 
 
 def create_stock(new_stock):
-    """ Create/adds a new stock into the stocks.json file.
-
-    :param stock: stock to create
-    :type stock: dict
-    :return True
-    :rtype: bool
-    """
     price = new_stock['price']
     open_price = new_stock['open_price']
     max_price,  min_price = get_min_max(price, open_price)
@@ -51,21 +34,14 @@ def save_stock(stock):
 
 
 def update_stock(new_stock):
-    """ Updates stock in stocks.json file 
-
-    :param new_stock: the most recent scrapped stock
-    :type new_stock: dict
-    :return: True
-    :rtype: bool
-    """
-
+    """ Updates stock in stocks.json file """
     old_stock = get_stock(new_stock['ticker'])
     to_update = set_pricing(new_stock, old_stock)
-    return save_stock(to_update)
+    saved_stock = save_stock(to_update)
+    return saved_stock
 
 
 def get_stock(ticker):
-
     stocks_file = os.getcwd() + '/updater/stocks.json'
     with open(stocks_file, 'r') as fp:
         try:
