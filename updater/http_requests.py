@@ -1,6 +1,7 @@
 import json
 from decouple import config
 from aiohttp import ClientSession
+from channels.layers import get_channel_layer
 
 
 class StocksController:
@@ -27,6 +28,13 @@ class StocksController:
             cls.logger(
                 f"{operation} {len(stocks['stocks'])} stock(s)\n")
             return stocks
+
+    async def update_clients(stock):
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            "stock_clients",
+            {"type": "client_message", "data": stock}
+        )
 
     def logger(text):
         return print(f"\n::: {text}", end="")
