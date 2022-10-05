@@ -4,6 +4,7 @@ from rest_framework import views, generics, viewsets
 from stocks_v1.models import Stock, Tracker
 from rest_framework import status
 from rest_framework.response import Response
+from updater.notifications import Notification
 
 
 class RealTimeStocks(generics.ListAPIView):
