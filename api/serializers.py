@@ -25,8 +25,19 @@ class StockSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TrackerSerializer(serializers.ModelSerializer):
-    stock = StockSerializer(read_only=True)
-
+    stock = serializers.StringRelatedField()
     class Meta:
         model = Tracker
-        exclude = ('completed',)
+        fields = [
+            "id",
+            "stock",
+            "quote_price",
+            "at_tracking",
+            "matched",
+            "start_date",
+            "last_updated",
+            "matched_date"
+        ]
+
+    def get_stock(self,obj):
+        return obj.ticker
