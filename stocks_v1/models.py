@@ -68,8 +68,9 @@ class Tracker(models.Model):
 
 
 class Notification(models.Model):
-    recipient = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="subscribers")
+    viewers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="viewed")
+    source = models.CharField(max_length=25)
     content = models.CharField(max_length=255)
     viewed = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
