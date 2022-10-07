@@ -2,7 +2,7 @@ from curses import raw
 from simple_history.utils import update_change_reason
 from api.serializers import StockSerializer, TrackerSerializer
 from rest_framework import views, generics, viewsets
-from stocks_v1.models import Stock, Tracker
+from stocks_v1.models import Stock, StockTracker
 from rest_framework import status
 from rest_framework.response import Response
 from updater.notifications import Notification
@@ -51,7 +51,7 @@ class AdminApiView(views.APIView):
 
 
 class TrackerViewSet(viewsets.ModelViewSet):
-    queryset = Tracker.objects.all()
+    queryset = StockTracker.objects.all()
     serializer_class = TrackerSerializer
 
     def get_queryset(self):
@@ -60,7 +60,7 @@ class TrackerViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         ticker = self.request.data['stock']
         quote_price = float(self.request.data['quote_price'])
-        stock = Tracker.check_stock(ticker, quote_price)
+        stock = StockTracker.check_stock(ticker, quote_price)
 
         if not stock:
             stock = serializer.save()
