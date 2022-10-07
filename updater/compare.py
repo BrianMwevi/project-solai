@@ -1,5 +1,11 @@
 import json
 import os
+from stocks_v1.models import PriceNotification, Stock, StockTracker
+from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
+from asgiref.sync import async_to_sync
+
+# TODO: Use OOP --> convert all funcs to methods class methods
 
 
 def compare_stock(new_stock):
@@ -38,6 +44,7 @@ def update_stock(new_stock):
     old_stock = get_stock(new_stock['ticker'])
     to_update = set_pricing(new_stock, old_stock)
     saved_stock = save_stock(to_update)
+
     return saved_stock
 
 
@@ -94,3 +101,21 @@ def get_min_max(price, open_price):
     if price > open_price:
         return [price, open_price]
     return [open_price, price]
+
+
+# TODO: Modularize this function to Notification class in notificaions.py file
+@database_sync_to_async
+def track_price(stock):
+    ticker = stock['ticker']
+    price = float(stock['price'])
+    tracker = StockTracker.check_match(ticker, price)
+
+    if tracker:
+        tracker = tracker.update_matched()
+        content = f"{ticker}'s price matches your quote of {tracker.quote_price}. Price matched at {tracker.matched_date}"
+        connected = get_channel_layer()
+        instance = PriceNotification(subscriber=tracker, content=content)
+        notification = instance.save_notification()
+        async_to_sync(connected.group_send)(f"{ticker}{tracker.quote_price}", {
+            "type": "client_message", "data": notification.content})
+    return tracker
