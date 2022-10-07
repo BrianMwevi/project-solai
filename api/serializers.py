@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stocks_v1.models import Stock, Tracker
+from stocks_v1.models import Stock, StockTracker
 
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,7 +27,7 @@ class StockSerializer(serializers.HyperlinkedModelSerializer):
 class TrackerSerializer(serializers.ModelSerializer):
     stock = serializers.StringRelatedField()
     class Meta:
-        model = Tracker
+        model = StockTracker
         fields = [
             "id",
             "stock",
