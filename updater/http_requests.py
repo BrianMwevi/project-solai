@@ -35,6 +35,7 @@ class StocksController:
             "stock_clients",
             {"type": "client_message", "data": stock}
         )
+        
 
     def logger(text):
         return print(f"\n::: {text}", end="")

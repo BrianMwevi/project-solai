@@ -1,4 +1,4 @@
-from stocks_v1.models import Tracker
+from stocks_v1.models import StockTracker
 from channels.layers import channel_layers
 
 
