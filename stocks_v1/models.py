@@ -1,21 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 from simple_history.models import HistoricalRecords
-
-# Create your models here.
-
-
-# class Investor(models.Model):
-# 	investor = models.OneToOneField(User, on_delete=models.CASCADE)
-# 	worth = models.DecimalField(max_digits=100, default=0, decimal_places=2)
-# 	joined_date = models.DateTimeField(auto_now_add=True)
-
-# 	def __str__(self):
-# 		return self.investor.username
+from django.conf import settings
+from django.utils import timezone
 
 
 class Stock(models.Model):
-    # investor = models.ManyToManyField(Investor, related_name='assets')
     category = models.CharField(max_length=50, blank=True, null=True)
     name = models.CharField(max_length=20, null=True, blank=True, unique=True)
     ticker = models.CharField(max_length=10, unique=True)
@@ -33,6 +24,15 @@ class Stock(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     history = HistoricalRecords(related_name='logs')
 
+    @classmethod
+    def get_stock(cls, id):
+        stock = cls.objects.get(id=id)
+        return stock
+
+    @classmethod
+    def get_history(cls, ticker):
+        return cls.history.filter(ticker=ticker)
+
     class Meta:
         ordering = ['updated_at']
 
@@ -40,21 +40,81 @@ class Stock(models.Model):
         return self.ticker
 
 
-# class Watchlist(models.Model):
-# 	watcher = models.ForeignKey(
-# 		Investor, related_name="wishlist", on_delete=models.CASCADE)
-# 	stock = models.ForeignKey(
-# 		Stock, related_name='stocks', on_delete=models.CASCADE)
-# 	price = models.DecimalField(max_digits=10, decimal_places=2)
-# 	# market_price = models.DecimalField(max_digits=10, decimal_places=2)
-# 	email_frequency = models.PositiveSmallIntegerField(default=1)
-# 	actual_email_frequency = models.PositiveSmallIntegerField(default=0)
-# 	start_date = models.DateTimeField(auto_now_add=True)
-# 	completed_date = models.DateTimeField(null=True, blank=True)
-# 	in_queue = models.BooleanField(default=False)
-# 	status = models.BooleanField(default=False)
-# 	last_email_date = models.DateTimeField(null=True, blank=True)
-# 	history = HistoricalRecords()
+class StockTracker(models.Model):
+    investors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="trackers")
+    stock = models.ForeignKey(Stock, related_name='asset',
+                              on_delete=models.CASCADE)
+    quote_price = models.DecimalField(max_digits=10, decimal_places=2)
+    at_tracking = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True)
+    matched = models.BooleanField(default=False)
+    start_date = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now_add=True)
+    matched_date = models.DateTimeField(null=True, blank=True)
 
-# 	def __str__(self):
-# 		return self.stock.ticker
+    def save_tracker(self):
+        self.save()
+        return self
+
+    def delete_tracker(self):
+        self.delete()
+
+    @classmethod
+    def get_stock(cls, id):
+        stock = cls.objects.get(id=id)
+        return stock
+
+    def update_matched(self):
+        self.matched_date = timezone.now()
+        self.matched = True
+        self.save()
+        return self
+
+    @classmethod
+    def check_match(cls, ticker, quote_price):
+        stock = cls.objects.filter(
+            stock__ticker=ticker, quote_price=quote_price).first()
+        return stock
+
+    class Meta:
+        ordering = ['start_date']
+
+    def __str__(self):
+        return f"{self.stock.ticker}: {self.quote_price}"
+
+
+class PriceNotification(models.Model):
+    subscriber = models.ForeignKey(
+        StockTracker, related_name="subscribers", on_delete=models.SET_NULL, null=True)
+    viewers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="viewed")
+    content = models.CharField(max_length=255)
+    viewed = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+    viewed_date = models.DateTimeField(blank=True, null=True)
+
+    def save_notification(self):
+        self.save()
+        return self
+
+    def delete_notification(self):
+        self.delete()
+
+    @classmethod
+    def get_viewed(cls):
+        viewed = cls.objects.filter(viewed=True)
+        return viewed
+
+    @classmethod
+    def get_unviewed(cls):
+        unviewed = cls.objects.filter(viewed=False)
+        return unviewed
+
+    def __str__(self) -> str:
+        return self.content
+
+
+@receiver(pre_save, sender=StockTracker)
+def set_at_tracking(sender, instance, **kwargs):
+    instance.at_tracking = instance.stock.price

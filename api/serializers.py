@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from stocks_v1.models import Stock
+from stocks_v1.models import Stock, StockTracker
 
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
@@ -22,3 +22,22 @@ class StockSerializer(serializers.HyperlinkedModelSerializer):
             'min_price',
             'updated_at',
         ]
+
+
+class TrackerSerializer(serializers.ModelSerializer):
+    stock = serializers.StringRelatedField()
+    class Meta:
+        model = StockTracker
+        fields = [
+            "id",
+            "stock",
+            "quote_price",
+            "at_tracking",
+            "matched",
+            "start_date",
+            "last_updated",
+            "matched_date"
+        ]
+
+    def get_stock(self,obj):
+        return obj.ticker

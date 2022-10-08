@@ -1,5 +1,5 @@
 from django.contrib import admin
-from stocks_v1.models import Stock
+from stocks_v1.models import Stock, StockTracker, PriceNotification
 from simple_history.admin import SimpleHistoryAdmin
 
 
@@ -9,3 +9,5 @@ class StockHistoryAdmin(SimpleHistoryAdmin):
 
 
 admin.site.register(Stock, StockHistoryAdmin)
+admin.site.register(StockTracker)
+admin.site.register(PriceNotification)
