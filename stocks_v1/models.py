@@ -29,6 +29,10 @@ class Stock(models.Model):
         stock = cls.objects.get(id=id)
         return stock
 
+    @classmethod
+    def get_history(cls, ticker):
+        return cls.history.filter(ticker=ticker)
+
     class Meta:
         ordering = ['updated_at']
 
