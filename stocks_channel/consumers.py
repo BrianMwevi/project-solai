@@ -4,27 +4,28 @@ from updater.compare import get_stocks
 from channels.db import database_sync_to_async
 from stocks_v1.models import Stock, StockTracker
 from api.serializers import StockSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
 
-# TODO: Move notifications code to Notificatin class
+# TODO: Create Authentication consumer using JWT
 
 
-class StockConsumer(AsyncJsonWebsocketConsumer):
+class StockConsumer(AsyncWebsocketConsumer):
     """Handles connections for unauthenticated users/clients"""
     async def connect(self):
         await self.accept()
         user = self.scope['user']
 
         if user.is_authenticated:
-            [await self.channel_layer.group_add(f"{tracker.ticker}{tracker.quote_price}") for tracker in user.trackers.all()]
-            print("Trackers: ", user.trackers.all())
+            await self.add_to_group()
+            stocks = list(get_stocks().values())
+            await self.send(text_data=json.dumps(stocks[:5]))
         else:
             await self.channel_layer.group_add("stock_clients", self.channel_name)
-            stocks = list(get_stocks().values())
-            await self.send(text_data=json.dumps(stocks))
 
     async def disconnect(self, code):
-        await self.channel_layer.group_discard(
-            "stock_clients", self.channel_name)
+        await self.remove_from_group()
 
     async def client_message(self, event):
         data = event['data']
@@ -34,7 +35,20 @@ class StockConsumer(AsyncJsonWebsocketConsumer):
         data = event['data']
         return await self.send(text_data=data)
 
+    @database_sync_to_async
+    def remove_from_group(self):
+        trackers = self.scope['user'].trackers.all()
+        [async_to_sync(self.channel_layer.group_discard)(
+            f"{tracker.stock.ticker}{tracker.quote_price}", self.channel_name)for tracker in trackers]
 
+    @database_sync_to_async
+    def add_to_group(self):
+        trackers = self.scope['user'].trackers.all()
+        [async_to_sync(self.channel_layer.group_add)(
+            f"{tracker.stock.ticker}{tracker.quote_price}", self.channel_name)for tracker in trackers]
+
+
+# TODO: Move notifications code to Notificatin class
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     """Handles websocket connections for authenticated users/clients and sends notifications"""
 
@@ -63,7 +77,7 @@ class HistoryConsumer(AsyncWebsocketConsumer):
             await self.accept()
         else:
             # await self.close() # uncomment this line to enable user auth
-            await self.accept() # remove this line to enable user auth
+            await self.accept()  # remove this line to enable user auth
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -71,7 +85,7 @@ class HistoryConsumer(AsyncWebsocketConsumer):
         data = await self.get_history(ticker)
         await self.send(text_data=json.dumps(data))
 
-    @database_sync_to_async
+    @ database_sync_to_async
     def get_history(self, ticker):
         serializer = StockSerializer(Stock.get_history(ticker), many=True)
         return {'data': serializer.data}
