@@ -1,5 +1,24 @@
 from rest_framework import serializers
 from stocks_v1.models import Stock, StockTracker
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'role']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User(email=validated_data['email'],
+                    username=validated_data['username'], role=validated_data['role'])
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
@@ -26,6 +45,7 @@ class StockSerializer(serializers.HyperlinkedModelSerializer):
 
 class TrackerSerializer(serializers.ModelSerializer):
     stock = serializers.StringRelatedField()
+
     class Meta:
         model = StockTracker
         fields = [
@@ -39,5 +59,5 @@ class TrackerSerializer(serializers.ModelSerializer):
             "matched_date"
         ]
 
-    def get_stock(self,obj):
+    def get_stock(self, obj):
         return obj.ticker
