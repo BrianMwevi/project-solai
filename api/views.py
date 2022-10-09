@@ -2,7 +2,7 @@ from simple_history.utils import update_change_reason
 from accounts.throttles import DeveloperThrottle, InvestorThrottle, TraderThrottle
 from api.serializers import StockSerializer
 from rest_framework import views, generics
-from api.serializers import StockSerializer, TrackerSerializer
+from api.serializers import StockSerializer, TrackerSerializer, UserSerializer
 from rest_framework import views, generics, viewsets
 from stocks_v1.models import Stock, StockTracker
 from rest_framework import status
@@ -10,6 +10,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from accounts.permissions import IsAdmin, IsDeveloper, IsInvestor, IsTrader
 from updater.notifications import Notification
+
+
+class UserRegisterView(generics.CreateAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    serializer_class = UserSerializer
 
 
 class RealTimeStocks(generics.ListAPIView):
