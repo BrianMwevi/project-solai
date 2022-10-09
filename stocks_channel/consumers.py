@@ -22,6 +22,8 @@ class StockConsumer(AsyncWebsocketConsumer):
             stocks = list(get_stocks().values())
             await self.send(text_data=json.dumps(stocks[:5]))
         else:
+            stocks = list(get_stocks().values())
+            await self.send(text_data=json.dumps(stocks))
             await self.channel_layer.group_add("stock_clients", self.channel_name)
 
     async def disconnect(self, code):
@@ -82,7 +84,11 @@ class HistoryConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         ticker = text_data_json['ticker'].upper()
+        # ticker = text_data
+        print("Requested data: ", ticker)
+
         data = await self.get_history(ticker)
+        print(data)
         await self.send(text_data=json.dumps(data))
 
     @ database_sync_to_async

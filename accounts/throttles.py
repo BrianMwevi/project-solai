@@ -11,3 +11,6 @@ class DeveloperThrottle(UserRateThrottle):
 
 class InvestorThrottle(UserRateThrottle):
     scope = 'investor'
+
+
+
