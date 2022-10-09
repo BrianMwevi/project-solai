@@ -116,6 +116,7 @@ def track_price(stock):
         connected = get_channel_layer()
         instance = PriceNotification(subscriber=tracker, content=content)
         notification = instance.save_notification()
-        async_to_sync(connected.group_send)(f"{ticker}{tracker.quote_price}", {
+        subscribers = f"{ticker}{tracker.quote_price}"
+        async_to_sync(connected.group_send)(subscribers, {
             "type": "client_message", "data": notification.content})
     return tracker
