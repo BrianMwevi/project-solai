@@ -2,8 +2,10 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from simple_history.models import HistoricalRecords
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+User = get_user_model()
 
 
 class Stock(models.Model):
@@ -42,7 +44,7 @@ class Stock(models.Model):
 
 class StockTracker(models.Model):
     investors = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="trackers")
+        User, related_name="trackers")
     stock = models.ForeignKey(Stock, related_name='asset',
                               on_delete=models.CASCADE)
     quote_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -88,7 +90,7 @@ class PriceNotification(models.Model):
     subscriber = models.ForeignKey(
         StockTracker, related_name="subscribers", on_delete=models.SET_NULL, null=True)
     viewers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="viewed")
+        User, related_name="viewed")
     content = models.CharField(max_length=255)
     viewed = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
