@@ -78,17 +78,14 @@ class HistoryConsumer(AsyncWebsocketConsumer):
         if self.scope['user'].is_authenticated:
             await self.accept()
         else:
+            # TODO:
             # await self.close() # uncomment this line to enable user auth
             await self.accept()  # remove this line to enable user auth
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         ticker = text_data_json['ticker'].upper()
-        # ticker = text_data
-        print("Requested data: ", ticker)
-
         data = await self.get_history(ticker)
-        print(data)
         await self.send(text_data=json.dumps(data))
 
     @ database_sync_to_async
