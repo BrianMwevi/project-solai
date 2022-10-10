@@ -1,18 +1,14 @@
 import json
 import os
+from stocks_v1.models import PriceNotification, Stock, StockTracker
+from channels.layers import get_channel_layer
+from channels.db import database_sync_to_async
+from asgiref.sync import async_to_sync
+
+# TODO: Use OOP --> convert all funcs to methods class methods
 
 
 def compare_stock(new_stock):
-    """ Checks if stock has changed or not
-
-    :param new_stock: most recent scrapped stock to compare with old stock
-    :type new_stock: dict
-    :return True if stock has been updated, False otherwise
-    :rtype: array of bool
-    :return True if stock has been created, False otherwise
-    :rtype: array of bool
-    """
-
     old_stock = get_stock(new_stock['ticker'])
     if old_stock is None:
         created = create_stock(new_stock)
@@ -24,13 +20,6 @@ def compare_stock(new_stock):
 
 
 def create_stock(new_stock):
-    """ Create/adds a new stock into the stocks.json file.
-
-    :param stock: stock to create
-    :type stock: dict
-    :return True
-    :rtype: bool
-    """
     price = new_stock['price']
     open_price = new_stock['open_price']
     max_price,  min_price = get_min_max(price, open_price)
@@ -51,17 +40,12 @@ def save_stock(stock):
 
 
 def update_stock(new_stock):
-    """ Updates stock in stocks.json file 
-
-    :param new_stock: the most recent scrapped stock
-    :type new_stock: dict
-    :return: True
-    :rtype: bool
-    """
-
+    """ Updates stock in stocks.json file """
     old_stock = get_stock(new_stock['ticker'])
     to_update = set_pricing(new_stock, old_stock)
-    return save_stock(to_update)
+    saved_stock = save_stock(to_update)
+
+    return saved_stock
 
 
 def get_json_file():
@@ -117,3 +101,22 @@ def get_min_max(price, open_price):
     if price > open_price:
         return [price, open_price]
     return [open_price, price]
+
+
+# TODO: Modularize this function to Notification class in notificaions.py file
+@database_sync_to_async
+def track_price(stock):
+    ticker = stock['ticker']
+    price = float(stock['price'])
+    tracker = StockTracker.check_match(ticker, price)
+
+    if tracker:
+        tracker = tracker.update_matched()
+        content = f"{ticker}'s price matches your quote of {tracker.quote_price}. Price matched at {tracker.matched_date}"
+        connected = get_channel_layer()
+        instance = PriceNotification(subscriber=tracker, content=content)
+        notification = instance.save_notification()
+        subscribers = f"{ticker}{tracker.quote_price}"
+        async_to_sync(connected.group_send)(subscribers, {
+            "type": "client_message", "data": notification.content})
+    return tracker

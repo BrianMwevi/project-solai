@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from decouple import config
 from updater.http_requests import StocksController
-from updater.compare import compare_stock
+from updater.compare import compare_stock, track_price
 
 
 async def fetch(url: str, **kwargs):
@@ -34,6 +34,7 @@ async def process_data(ticker_elements: list):
             if created:
                 to_create.append(stock)
             if updated:
+                await track_price(stock)
                 to_update.append(stock)
 
         return ({"stocks": to_create}, {"stocks": to_update})
