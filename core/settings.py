@@ -116,21 +116,21 @@ if config('MODE') == "dev":
     }
 # production
 else:
-    # DATABASES = {
-    #     'default': dj_database_url.config(
-    #         default=config('DATABASE_URL')
-    #     )
-    # }
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
-            'USER': config('PGUSER'),
-            'PASSWORD': config('PGPASSWORD'),
-            'PORT': config('PGPORT'),
-            'HOST': config('PGHOST')
-        }
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL')
+        )
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql',
+    #         'NAME': config('DB_NAME'),
+    #         'USER': config('PGUSER'),
+    #         'PASSWORD': config('PGPASSWORD'),
+    #         'PORT': config('PGPORT'),
+    #         'HOST': config('PGHOST')
+    #     }
+    # }
 
 
 # Password validation
