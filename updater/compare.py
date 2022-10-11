@@ -5,24 +5,22 @@ from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync
 
-# TODO: Use OOP --> convert all funcs to methods class methods
+# TODO: Use OOP --> convert all funcs to class methods
 
 
 def compare_stock(new_stock):
     old_stock = get_stock(new_stock['ticker'])
+    updated = created = False
     if old_stock is None:
         created = create_stock(new_stock)
-        return (False, created)
-    if old_stock['percentage_change'] == new_stock['percentage_change']:
-        return (False, False)
-    updated = update_stock(new_stock)
-    return (updated, False)
+    elif old_stock['percentage_change'] != new_stock['percentage_change']:
+        updated = update_stock(new_stock)
+    return (updated, created)
 
 
 def create_stock(new_stock):
-    price = new_stock['price']
     open_price = new_stock['open_price']
-    max_price,  min_price = get_min_max(price, open_price)
+    max_price,  min_price = get_min_max(new_stock['price'], open_price)
     new_stock['max_price'] = max_price
     new_stock['min_price'] = min_price
     new_stock['prev_price'] = open_price
@@ -36,7 +34,7 @@ def save_stock(stock):
     stocks_file = get_json_file()
     with open(stocks_file, 'w') as fp:
         json.dump(stocks, fp)
-        return True
+        return stock
 
 
 def update_stock(new_stock):
