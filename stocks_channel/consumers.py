@@ -92,8 +92,10 @@ class HistoryConsumer(AsyncWebsocketConsumer):
     @ database_sync_to_async
     def get_history(self, data):
         ticker = data['ticker'].upper()
+        end_date = None
         start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
+        if "end_date" in data:
+            end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
         serializer = StockSerializer(Stock.get_history(
             ticker, start_date, end_date), many=True)
         return {'data': serializer.data}

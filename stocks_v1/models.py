@@ -34,8 +34,8 @@ class Stock(models.Model):
     @classmethod
     def get_history(cls, ticker, start_date=None, end_date=None):
         if start_date and end_date:
-            return cls.history.filter(ticker=ticker, updated_at__gte=start_date, updated_at__lte=end_date)
-        return cls.history.filter(ticker=ticker, updated_at=timezone.now().date)
+            return cls.history.filter(ticker=ticker, updated_at__date__gte=start_date, updated_at__date__lte=end_date)
+        return cls.history.filter(ticker=ticker, updated_at__date=start_date)
 
     class Meta:
         ordering = ['updated_at']
