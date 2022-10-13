@@ -7,7 +7,8 @@ from api.serializers import StockSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async
 from asgiref.sync import async_to_sync
-
+from datetime import datetime
+from django.utils import timezone
 # TODO: Create Authentication consumer using JWT
 
 
@@ -82,13 +83,17 @@ class HistoryConsumer(AsyncWebsocketConsumer):
             # await self.close() # uncomment this line to enable user auth
             await self.accept()  # remove this line to enable user auth
 
+    # TODO: Add date filter
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        ticker = text_data_json['ticker'].upper()
-        data = await self.get_history(ticker)
-        await self.send(text_data=json.dumps(data))
+        data = json.loads(text_data)
+        stocks = await self.get_history(data)
+        await self.send(text_data=json.dumps(stocks))
 
     @ database_sync_to_async
-    def get_history(self, ticker):
-        serializer = StockSerializer(Stock.get_history(ticker), many=True)
+    def get_history(self, data):
+        ticker = data['ticker'].upper()
+        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
+        serializer = StockSerializer(Stock.get_history(
+            ticker, start_date, end_date), many=True)
         return {'data': serializer.data}
