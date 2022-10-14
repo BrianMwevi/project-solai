@@ -14,9 +14,9 @@ from rest_framework_simplejwt.views import (
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Kenya Stocks API",
+        title="Solai",
         default_version='v1',
-        description="Free and open stocks API that is populated with publicly available data",
+        description="Solai is an open-source project providing realtime and historical stocks pricing and performance populated by public data",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="mwevibrian@gmail.com"),
         license=openapi.License(name="MIT"),
@@ -35,10 +35,10 @@ urlpatterns = [
     path('history/', HistoricalStocks.as_view(), name="history_stocks"),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
             schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path('', schema_view.with_ui('swagger',
-                                 cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc',
-                                       cache_timeout=0), name='schema-redoc'),
+    path('swagger/', schema_view.with_ui('swagger',
+                                         cache_timeout=0), name='schema-swagger-ui'),
+    path('', schema_view.with_ui('redoc',
+                                 cache_timeout=0), name='schema-redoc'),
     path('auth/register/', UserRegisterView.as_view(), name="register"),
     path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

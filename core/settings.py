@@ -1,18 +1,14 @@
 import dj_database_url
-from decouple import config, Csv
+from decouple import config
 from pathlib import Path
 import os
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
 SECRET_KEY = config('SECRET_KEY')
 ALLOWED_HOSTS = ["*"]
-
 DEBUG = config('DEBUG', default=False, cast=bool)
-
 
 INSTALLED_APPS = [
     'channels',
@@ -34,6 +30,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -70,7 +67,6 @@ REST_FRAMEWORK = {
     # ),
 }
 
-
 ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
@@ -91,7 +87,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
-
+AUTH_USER_MODEL = "accounts.User"
 
 # Channels layer configuration for group websocket broadcast
 CHANNEL_LAYERS = {
@@ -121,21 +117,9 @@ else:
             default=config('DATABASE_URL')
         )
     }
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql',
-    #         'NAME': config('DB_NAME'),
-    #         'USER': config('PGUSER'),
-    #         'PASSWORD': config('PGPASSWORD'),
-    #         'PORT': config('PGPORT'),
-    #         'HOST': config('PGHOST')
-    #     }
-    # }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -154,44 +138,35 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Africa/Nairobi'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = "accounts.User"
 
-
+# WHITELISTED DOMAINS TO ACCESS THIS APP
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000",
-    "https://open-stocks.herokuapp.com",
     "https://web-production-7794.up.railway.app",
-    "https://brianmwevi.github.io",
-    "https://6325e22d41b171616f238d4e--isnt-brianmwevi-awesome.netlify.app",
 ]
 
-# Heroku: Update database configuration from $DATABASE_URL.
+# Update database configuration from $DATABASE_URL.
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-# django_heroku.settings(locals())
+
+# Throttling Settings
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 0
@@ -203,7 +178,7 @@ CSP_SCRIPT_SRC = ("'self'",)
 CSP_IMG_SRC = ("'self'",)
 CSP_FONT_SRC = ("'self'",)
 
-
+# Simple jwt settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=59),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
