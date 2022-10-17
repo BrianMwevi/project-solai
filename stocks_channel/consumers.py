@@ -87,7 +87,7 @@ class HistoryConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         stocks = await self.get_history(data)
-        await self.send(text_data=json.dumps(stocks))
+        await self.send(text_data=json.dumps(stocks.data))
 
     @ database_sync_to_async
     def get_history(self, data):
