@@ -22,12 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
-    # url = serializers.HyperlinkedIdentityField(view_name='admin-detail')
+    id = serializers.SerializerMethodField()
 
     class Meta:
         model = Stock
         fields = [
-            # 'url',
             'id',
             'category',
             'name',
@@ -41,6 +40,9 @@ class StockSerializer(serializers.HyperlinkedModelSerializer):
             'min_price',
             'updated_at',
         ]
+
+    def get_id(self, obj):
+        return obj.pk
 
 
 class TrackerSerializer(serializers.ModelSerializer):
