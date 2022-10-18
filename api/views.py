@@ -52,7 +52,7 @@ class HistoricalStocks(generics.ListAPIView):
     #     return [throttle() for throttle in throttle_classes]
 
     def get_queryset(self):
-        return self.queryset.filter(ticker=self.request.GET.get('ticker'))
+        return self.queryset.filter(ticker=self.request.GET.get('ticker'))[:30]
 
 
 class AdminApiView(views.APIView):
