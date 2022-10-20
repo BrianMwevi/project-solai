@@ -17,6 +17,11 @@ async def fetch(url: str, **kwargs):
 async def parse_data(raw_data):
     async with ClientSession() as session:
         soup = BeautifulSoup(raw_data, features="xml")
+        market_status = soup.select_one('mystocks').get('t')
+        # TODO: Shutdown timer when market is closed
+        # TODO: Update last stock history with close price
+        # TODO: Do vice versa for when market is open
+        print('closed' in str(market_status))
         return soup.select("i")
 
 
