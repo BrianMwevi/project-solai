@@ -1,6 +1,6 @@
 from simple_history.utils import update_change_reason
 from accounts.throttles import DeveloperThrottle, InvestorThrottle, TraderThrottle
-from api.serializers import StockSerializer
+from api.serializers import HistorySerializer, StockSerializer
 from rest_framework import views, generics
 from api.serializers import StockSerializer, TrackerSerializer, UserSerializer
 from rest_framework import views, generics, viewsets
@@ -36,8 +36,12 @@ class RealTimeStocks(generics.ListAPIView):
 
 
 class HistoricalStocks(generics.ListAPIView):
-    queryset = Stock.history.all()
-    serializer_class = StockSerializer
+    serializer_class = HistorySerializer
+
+    def get_queryset(self):
+        ticker = self.request.GET.get('ticker', None).upper()
+        stocks = Stock.history.filter(ticker=ticker)[:100]
+        return stocks
     # permission_classes = [IsAuthenticated, IsAdmin |
     #                       IsInvestor | IsTrader | IsDeveloper]
 
@@ -51,8 +55,8 @@ class HistoricalStocks(generics.ListAPIView):
     #         throttle_classes = [TraderThrottle]
     #     return [throttle() for throttle in throttle_classes]
 
-    def get_queryset(self):
-        return self.queryset.filter(ticker=self.request.GET.get('ticker'))[:30]
+    # def get_queryset(self):
+    #     return self.queryset.filter(ticker=self.request.GET.get('ticker'))[:30]
 
 
 class AdminApiView(views.APIView):
