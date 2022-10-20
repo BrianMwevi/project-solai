@@ -21,6 +21,13 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class HistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Stock
+        fields = ['price', 'updated_at']
+
+
 class StockSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.SerializerMethodField()
 
