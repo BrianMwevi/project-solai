@@ -11,7 +11,7 @@ ALLOWED_HOSTS = ["*"]
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 INSTALLED_APPS = [
-    'channels',
+    # 'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
