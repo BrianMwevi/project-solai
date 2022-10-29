@@ -41,7 +41,18 @@ class UserTestCase(TestCase):
         user = User.objects.get(username=self.username)
         user.role = "TRADER"
         user.save()
+        self.assertTrue(user.role == "TRADER")
 
         # Refresh the database
         updated_user = User.objects.get(username=self.username)
         self.assertTrue(updated_user.role == "DEVELOPER")
+
+    def test_cannot_change_user_usage(self):
+        user = User.objects.get(username=self.username)
+        user.usage = "BUSINESS"
+        user.save()
+        self.assertTrue(user.usage == "BUSINESS")
+
+        # Refresh the database
+        updated_user = User.objects.get(username=self.username)
+        self.assertTrue(updated_user.usage == "PERSONAL")
