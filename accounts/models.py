@@ -18,9 +18,9 @@ class User(AbstractUser):
         PERSONAL = "PERSONAL", 'Personal'
 
     base_role = Role.DEVELOPER
-    confirmed_email = models.BooleanField(default=False)
     usage = models.CharField(max_length=55, choices=Usage.choices)
     role = models.CharField(max_length=55, choices=Role.choices)
+    is_confirmed = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
