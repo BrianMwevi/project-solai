@@ -21,11 +21,10 @@ INSTALLED_APPS = [
     'simple_history',
     'rest_framework',
     'drf_yasg',
-    'accounts.apps.AccountsConfig',
-    'api',
     'corsheaders',
-    'stocks_channel',
-    'stocks_v1',
+    'accounts.apps.AccountsConfig',
+    # 'stocks_channel.apps.StocksChannelConfig',
+    # 'stocks_v1.apps.StocksV1Config',
 ]
 
 MIDDLEWARE = [

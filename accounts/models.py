@@ -4,14 +4,23 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class User(AbstractUser):
+    """Defines custom user objects -- Developer, Investor and Trader. Default user is developer"""
+
     class Role(models.TextChoices):
         ADMIN = "ADMIN", 'Admin'
         DEVELOPER = "DEVELOPER", 'Developer'
         TRADER = "TRADER", 'Trader'
         INVESTOR = "INVESTOR", 'Investor'
 
-    base_role = Role.INVESTOR
-    role = models.CharField(max_length=50, choices=Role.choices)
+    class Usage(models.TextChoices):
+        STUDENT = "STUDENT", 'Student'
+        BUSINESS = "BUSINESS", 'Business'
+        PERSONAL = "PERSONAL", 'Personal'
+
+    base_role = Role.DEVELOPER
+    confirmed_email = models.BooleanField(default=False)
+    usage = models.CharField(max_length=55, choices=Usage.choices)
+    role = models.CharField(max_length=55, choices=Role.choices)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
