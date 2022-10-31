@@ -47,7 +47,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        "rest_framework_api_key.permissions.HasAPIKey",
+        # "rest_framework_api_key.permissions.HasAPIKey",
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_THROTTLE_CLASSES': [
@@ -143,7 +143,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+# USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
