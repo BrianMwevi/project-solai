@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'simple_history',
     'rest_framework',
+    "rest_framework_api_key",
     'drf_yasg',
     'corsheaders',
     'accounts.apps.AccountsConfig',
@@ -42,11 +43,12 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
+        "rest_framework_api_key.permissions.HasAPIKey",
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'accounts.throttles.DeveloperThrottle',
