@@ -39,6 +39,11 @@ class User(AbstractUser):
                 self.is_staff = True
         return super().save(*args, **kwargs)
 
+    @classmethod
+    def get_user_by_email(cls, email):
+        return cls.objects.filter(email__iexact=email).first()
+        
+
 
 class DeveloperManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):

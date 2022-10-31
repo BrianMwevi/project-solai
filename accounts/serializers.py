@@ -22,7 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         user = User(email=email, username=username, usage=usage)
         user.set_password(password)
-        # user.save()
-        # sent_email = async_to_sync(
-        #     EmailConfirmation.signup)(self.context['request'], user)
+        user.save()
+        sent_email = async_to_sync(
+            EmailConfirmation.signup)(self.context['request'], user)
         return user
+
