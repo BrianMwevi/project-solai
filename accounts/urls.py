@@ -1,12 +1,13 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import include, path
-from accounts.views import ActivateEmailView, GenerateApiKeyView, DeveloperSignupView
+from accounts.views import ActivateEmailView, GenerateApiKeyView, DeveloperSignupView, ResetApiKeyView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 urlpatterns = [
     path('signup/developer/', DeveloperSignupView.as_view(), name='signup_dev'),
-    path('apikey/generate/', GenerateApiKeyView.as_view(), name='new_token'),
+    path('apikey/generate/', GenerateApiKeyView.as_view(), name='new_apikey'),
+    path('apikey/reset/', ResetApiKeyView.as_view(), name='reset_key'),
     path('login/', TokenObtainPairView.as_view(), name='new_token'),
     path('token/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
     path(
