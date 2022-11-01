@@ -7,6 +7,8 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth import login
 
+from drf_yasg.utils import swagger_auto_schema
+
 from accounts.permissions import CanGenerate, CanReset, IsDeveloper
 from accounts.serializers import DeveloperSerializer
 from accounts.tokens import account_activation_token
@@ -16,15 +18,14 @@ User = get_user_model()
 
 
 class DeveloperSignupView(generics.CreateAPIView):
-    """
-    Handles Developers account creation
-    """
+    """Creates a developer account using the provided account details"""
     serializer_class = DeveloperSerializer
     permission_classes = ()
     authentication_classes = ()
 
 
 class GenerateApiKeyView(views.APIView):
+    """Generates an api key for authenticated developers who have no record of generating any in the past"""
     permission_classes = [IsAuthenticated, IsDeveloper, CanGenerate]
 
     def post(self, request):
@@ -34,6 +35,7 @@ class GenerateApiKeyView(views.APIView):
 
 
 class ResetApiKeyView(views.APIView):
+    """Revokes old and generates new api key for authenticated developers"""
     permission_classes = [IsAuthenticated, IsDeveloper, CanReset]
 
     def post(self, request):
@@ -41,8 +43,8 @@ class ResetApiKeyView(views.APIView):
         content = {'apiKey': key}
         return Response(content, status=status.HTTP_200_OK)
 
-
 class ActivateEmailView(views.APIView):
+    """Sends email activation link to the provided email during signup"""
     authentication_classes = ()
     permission_classes = ()
 
