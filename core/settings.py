@@ -47,7 +47,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        # "rest_framework_api_key.permissions.HasAPIKey",
+        "rest_framework_api_key.permissions.HasAPIKey",
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_THROTTLE_CLASSES': [
@@ -56,7 +56,7 @@ REST_FRAMEWORK = {
         # 'accounts.throttles.InvestorThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'developer': '60/hour',
+        'developer': '6/hour',
         # 'investor': '15/hour',
         # 'trader': '15/hour',
     },
