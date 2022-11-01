@@ -20,7 +20,6 @@ class User(AbstractUser):
         PERSONAL = "PERSONAL", 'Personal'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    base_role = Role.DEVELOPER
     usage = models.CharField(max_length=55, choices=Usage.choices)
     role = models.CharField(max_length=55, choices=Role.choices)
     is_staff = models.BooleanField(default=False)
@@ -28,20 +27,10 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     api_key = models.ForeignKey(
-        APIKey, on_delete=models.SET_NULL, null=True, related_name='user_apikey')
+        APIKey, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_apikey')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-
-    # def save(self, *args, **kwargs):
-    #     if not self.pk:
-    #         self.role = self.base_role
-    #         print("Role altered to: ", self.role)
-    #         if self.base_role == "ADMIN":
-    #             self.is_active = True
-    #             self.is_superuser = True
-    #             self.is_staff = True
-    #     return super().save(*args, **kwargs)
 
     @classmethod
     def get_user_by_email(cls, email):

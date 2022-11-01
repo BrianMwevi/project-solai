@@ -11,7 +11,7 @@ class DeveloperSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Developer
-        fields = ['id', 'username', 'email', 'password', 'usage']
+        fields = ['id', 'username', 'email', 'password', 'usage', 'role']
         extra_kwargs = {'password': {'write_only': True},
                         }
 
@@ -20,7 +20,7 @@ class DeveloperSerializer(serializers.ModelSerializer):
         email = validated_data['email']
         password = validated_data['password']
         usage = validated_data['usage']
-        role = 'DEVELOPER'
+        role = validated_data['role']
 
         user = User(email=email, username=username, usage=usage, role=role)
         user.set_password(password)
