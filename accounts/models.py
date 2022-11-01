@@ -2,6 +2,7 @@ import uuid
 from multiprocessing.managers import BaseManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from rest_framework_api_key.models import APIKey
 
 
 class User(AbstractUser):
@@ -26,7 +27,8 @@ class User(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
-    # api_key = models.CharField()
+    api_key = models.ForeignKey(
+        APIKey, on_delete=models.SET_NULL, null=True, related_name='user_apikey')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -44,7 +46,10 @@ class User(AbstractUser):
     @classmethod
     def get_user_by_email(cls, email):
         return cls.objects.filter(email__iexact=email).first()
-        
+
+    @classmethod
+    def get_user(cls, id):
+        return cls.objects.get(id=id)
 
 
 class DeveloperManager(BaseUserManager):
