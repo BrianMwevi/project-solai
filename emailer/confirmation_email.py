@@ -8,11 +8,10 @@ from accounts.tokens import account_activation_token
 
 class EmailConfirmation:
 
-    async def signup(request, user):
+    def email_user(request, user, mail_subject, template):
 
         current_site = get_current_site(request)
-        mail_subject = "Solai Account Activation"
-        message = render_to_string('accounts/account_activation_email.html', {
+        message = render_to_string(template, {
             'user': user,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
@@ -21,3 +20,4 @@ class EmailConfirmation:
         to_email = user.email
         email = EmailMessage(mail_subject, message, to=[to_email])
         return email.send()
+
