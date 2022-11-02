@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'simple_history',
     'rest_framework',
     "rest_framework_api_key",
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'corsheaders',
     'accounts.apps.AccountsConfig',
