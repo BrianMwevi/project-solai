@@ -9,7 +9,7 @@ from rest_framework import permissions
 schema_view = get_schema_view(
     openapi.Info(
         title="Solai",
-        default_version='v1',
+        default_version='v2',
         description="Solai is an open-source project providing realtime and historical stocks pricing and performance populated by public data",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="mwevibrian@gmail.com"),
@@ -27,6 +27,6 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger',
                                          cache_timeout=0), name='schema-swagger-ui'),
     path('', schema_view.with_ui('redoc',
-                                 cache_timeout=0), name='schema-redoc'),
+                                 cache_timeout=10), name='schema-redoc'),
 ]
 handler404 = 'core.views.error_404_view'

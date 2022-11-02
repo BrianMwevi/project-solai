@@ -9,10 +9,12 @@ from django.contrib.auth import login
 
 from drf_yasg.utils import swagger_auto_schema
 
-from accounts.permissions import CanGenerate, CanReset, IsDeveloper
+from accounts.permissions import CanGenerate, IsDeveloper
 from accounts.serializers import DeveloperSerializer
 from accounts.tokens import account_activation_token
 from accounts.api_keys import NewKey
+from emailer.confirmation_email import EmailConfirmation
+from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken, BlacklistedToken
 
 User = get_user_model()
 
@@ -29,19 +31,20 @@ class GenerateApiKeyView(views.APIView):
     permission_classes = [IsAuthenticated, IsDeveloper, CanGenerate]
 
     def post(self, request):
-        api_key, key = NewKey.generate(request.user.id)
+        _, key = NewKey.generate(request.user.id)
         content = {'apiKey': key}
         return Response(content, status=status.HTTP_200_OK)
 
 
 class ResetApiKeyView(views.APIView):
     """Revokes old and generates new api key for authenticated developers"""
-    permission_classes = [IsAuthenticated, IsDeveloper, CanReset]
+    permission_classes = [IsAuthenticated, IsDeveloper, ~CanGenerate]
 
     def post(self, request):
-        api_key, key = NewKey.reset(request.user.id)
+        _, key = NewKey.reset(request.user.id)
         content = {'apiKey': key}
         return Response(content, status=status.HTTP_200_OK)
+
 
 class ActivateEmailView(views.APIView):
     """Sends email activation link to the provided email during signup"""
@@ -57,9 +60,56 @@ class ActivateEmailView(views.APIView):
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            login(request, user)
-            content = {"message": "Account activated succuessfully!"}
+            refresh = RefreshToken.for_user(user)
+            content = {"refresh": str(refresh),
+                       "access": str(refresh.access_token)}
             return Response(content, status=status.HTTP_200_OK)
-        else:
-            content = {'detail': "Invalid activation link"}
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordView(views.APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def post(self, request):
+        if request.data.get('email', None):
+            user = User.get_user_by_email(request.data['email'])
+            mail_subject = "Solai Account Password Reset"
+            template = 'accounts/password_reset.html'
+            _ = EmailConfirmation.email_user(
+                request, user, mail_subject, template)
+        return Response(status=status.HTTP_200_OK)
+
+
+class SetNewPasswordView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        request.user.set_password(request.data['password'])
+        request.user.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class LogoutView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutAllView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        print(request.user.is_authenticated)
+        tokens = OutstandingToken.objects.filter(user_id=request.user.id)
+        [BlacklistedToken.objects.get_or_create(token=token)
+         for token in tokens]
+        return Response(status=status.HTTP_205_RESET_CONTENT)
