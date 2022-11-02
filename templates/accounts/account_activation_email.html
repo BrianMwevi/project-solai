@@ -1,4 +1,10 @@
 {% autoescape off %}
-Hi {{ user.username }},
-Please click on the link to confirm your registration,http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+Hi {{ user.username|title }},
+
+Solai is grateful to have you! Please confirm your email address by clicking the following link. http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+If you think this is a mistake, please ignore the email.
+
+Regards,
+Solai team
 {% endautoescape %}
