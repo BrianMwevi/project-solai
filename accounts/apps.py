@@ -8,5 +8,4 @@ class AccountsConfig(AppConfig):
 
     def ready(self):
         from clock import start
-        # print("Hello, stocks_v1 ready")
         start()
