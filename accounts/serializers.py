@@ -23,7 +23,7 @@ class SignupSerializer(serializers.ModelSerializer):
         role = validated_data['role']
         user = User(email=email, username=username, usage=usage, role=role)
         user.set_password(password)
-        # user.save()
+        user.save()
         mail_subject = "Solai Account Activation"
         template = 'accounts/account_activation_email.html'
         scheduler.add_job(LongTasks.send_email, args=[
