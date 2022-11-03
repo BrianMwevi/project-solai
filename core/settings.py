@@ -103,7 +103,7 @@ CHANNEL_LAYERS = {
 
 # Database Configs
 # development
-if config('DEBUG'):
+if config('MODE') == "dev":
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -114,7 +114,6 @@ if config('DEBUG'):
     }
 # production
 else:
-    print("Prod")
     DATABASES = {
         'default': dj_database_url.config(
             default=config('DATABASE_URL')
