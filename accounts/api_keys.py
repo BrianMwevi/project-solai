@@ -11,6 +11,7 @@ class NewKey:
     def generate(cls, user_id):
         api_key, key = APIKey.objects.create_key(name=user_id)
         api_key.expiry_date = datetime.now() + timedelta(days=30)
+        api_key.save()
         cls.add_to_user(user_id, api_key)
         return (api_key, key)
 
