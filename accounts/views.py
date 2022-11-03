@@ -1,6 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, views, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken, BlacklistedToken
 
 from django.contrib.auth import get_user_model
 from django.utils.encoding import force_text
@@ -14,7 +15,7 @@ from accounts.serializers import DeveloperSerializer
 from accounts.tokens import account_activation_token
 from accounts.api_keys import NewKey
 from emailer.confirmation_email import EmailConfirmation
-from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken, BlacklistedToken
+from clock import scheduler
 
 User = get_user_model()
 
@@ -77,8 +78,8 @@ class ResetPasswordView(views.APIView):
             user = User.get_user_by_email(request.data['email'])
             mail_subject = "Solai Account Password Reset"
             template = 'accounts/password_reset.html'
-            _ = EmailConfirmation.email_user(
-                request, user, mail_subject, template)
+            scheduler.add_job(EmailConfirmation.email_user, args=[
+                request, user, mail_subject, template])
         return Response(status=status.HTTP_200_OK)
 
 
@@ -108,7 +109,6 @@ class LogoutAllView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print(request.user.is_authenticated)
         tokens = OutstandingToken.objects.filter(user_id=request.user.id)
         [BlacklistedToken.objects.get_or_create(token=token)
          for token in tokens]

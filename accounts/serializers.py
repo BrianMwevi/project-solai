@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from emailer.confirmation_email import EmailConfirmation
+from clock import scheduler
+
+
 User = get_user_model()
 
 
@@ -25,6 +28,6 @@ class DeveloperSerializer(serializers.ModelSerializer):
 
         mail_subject = "Solai Account Activation"
         template = 'accounts/account_activation_email.html'
-        _ = EmailConfirmation.email_user(
-            self.context['request'], user, mail_subject, template)
+        scheduler.add_job(EmailConfirmation.email_user, args=[
+                          self.context["request"], user, mail_subject, template])
         return user
