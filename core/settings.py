@@ -18,15 +18,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+    
     'simple_history',
+    'corsheaders',
+
     'rest_framework',
     "rest_framework_api_key",
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
-    'corsheaders',
+    
     'accounts.apps.AccountsConfig',
-    # 'stocks_channel.apps.StocksChannelConfig',
-    # 'stocks_v1.apps.StocksV1Config',
+    'stocks.apps.StocksConfig',
 ]
 
 MIDDLEWARE = [
