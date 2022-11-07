@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 from decouple import config
-from clock import scheduler
+# from clock import scheduler
 import requests
+from updater.update_db import StocksController
 
 
 def fetch(url: str):
@@ -25,11 +26,10 @@ def process_data(ticker_elements: list):
         stock = process_ticker(element)
         (updated, created) = compare_stock(stock)
         if created:
-            StocksController.update_clients(created)
+            # StocksController.update_clients(created)
             to_create.append(created)
         if updated:
-            track_price(updated)
-            StocksController.update_clients(updated)
+            # StocksController.update_clients(updated)
             to_update.append(updated)
 
     return ({"stocks": to_create}, {"stocks": to_update})
@@ -40,10 +40,9 @@ def process_ticker(element):
     stock['ticker'] = element.get('a')
     price = stock['price'] = float(element.get('b').replace(',', ''))
     change = float(element.get('d')) if element.get('d') != None else 0
-    change_direction = element.get('f')
-    change = change*-1 if change_direction == 'l' else change
-    open_price = stock['open_price'] = round(price - change, 2)
-    stock['percentage_change'] = round(change*100/open_price, 2)
+    change = change*-1 if element.get('f') == 'l' else change
+    open = stock['open'] = round(price - change, 2)
+    stock['change'] = round(change*100/open, 2)
     return stock
 
 
@@ -51,6 +50,8 @@ def scraper():
     raw_data = fetch(config("URL_V1"))
     ticker_elements = parse_data(raw_data)
     to_create, to_update = process_data(ticker_elements)
+    
+    from clock import scheduler
     if to_create['stocks']:
         scheduler.add_job(StocksController.create_stocks, args=[to_create])
     if to_update['stocks']:

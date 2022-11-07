@@ -1,5 +1,4 @@
 from django.apps import AppConfig
-from clock import start
 
 
 class AccountsConfig(AppConfig):

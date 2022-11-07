@@ -25,6 +25,12 @@ class Stock(models.Model):
     history = HistoricalRecords(related_name='logs')
 
     @classmethod
+    def create_stocks(cls, stocks):
+        return cls.objects.bulk_create(stocks)
+
+    
+
+    @classmethod
     def get_stock(cls, id):
         stock = cls.objects.get(id=id)
         return stock
