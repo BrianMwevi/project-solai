@@ -1,4 +1,11 @@
 from django.contrib import admin
 from stocks.models import Stock
 
-admin.site.register(Stock)
+from simple_history.admin import SimpleHistoryAdmin
+
+
+class StockHistoryAdmin(SimpleHistoryAdmin):
+    history_list_display = ['open', 'price', 'change', 'high', 'low']
+
+
+admin.site.register(Stock, StockHistoryAdmin)
