@@ -17,7 +17,6 @@ class Stock(models.Model):
     open = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     price = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     change = models.DecimalField(max_digits=10, default=0, decimal_places=2)
-    prev = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     high = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     low = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     close = models.DecimalField(max_digits=10, default=0, decimal_places=2)
@@ -28,7 +27,14 @@ class Stock(models.Model):
     def create_stocks(cls, stocks):
         return cls.objects.bulk_create(stocks)
 
-    
+    @classmethod
+    def update_stock(cls, stock):
+        print("Updated: ", stock['ticker'])
+        return cls.objects.filter(ticker=stock['ticker']).update(**stock)
+
+    @classmethod
+    def get_stock_by_ticker(cls, ticker):
+        return cls.objects.get(ticker=ticker)
 
     @classmethod
     def get_stock(cls, id):
