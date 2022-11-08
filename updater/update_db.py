@@ -9,15 +9,15 @@ class StocksController:
     @classmethod
     def create_stocks(cls, data):
         cls.logger(f"Creating {len(data['stocks'])} stock(s)...")
-        instances = [Stock(**stock) for stock in data]
+        instances = [Stock(**stock) for stock in data['stocks']]
         stocks = Stock.create_stocks(instances)
-        print("Created: ", len(stocks))
+        # print("Created: ", len(stocks))
 
     @classmethod
     def update_stocks(cls, data):
         cls.logger(f"Updating {len(data['stocks'])} stock(s)...")
-        stocks = cls.send_request("PUT", data, "Updated")
-        return stocks
+        [Stock.update_stock(stock) for stock in data['stocks']]
+      
 
     @classmethod
     def send_request(cls, method, data, operation, **kwargs):
