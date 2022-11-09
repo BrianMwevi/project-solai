@@ -13,7 +13,7 @@ from accounts.permissions import CanGenerateKey, IsDeveloper
 from accounts.serializers import SignupSerializer
 from accounts.tokens import account_activation_token
 from accounts.api_keys import NewKey
-from accounts.tasks import LongTasks
+from core.tasks import LongTasks
 from clock import scheduler
 
 User = get_user_model()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from accounts.tasks import LongTasks
+from core.tasks import LongTasks
 from clock import scheduler
 
 
