@@ -2,8 +2,8 @@ import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from decouple import config
-from updater.http_requests import StocksController
-from updater.compare import compare_stock
+from spider.http_requests import StocksController
+from spider.compare import compare_stock
 
 
 async def fetch(url: str, **kwargs):

@@ -43,7 +43,7 @@ def update_stock(new_stock):
 
 
 def get_json_file():
-    file_path = '/updater/stocks.json'
+    file_path = '/spider/stocks.json'
     if not os.path.exists(os.getcwd() + file_path):
         f = open(os.getcwd() + file_path, "x")
     return os.getcwd() + file_path

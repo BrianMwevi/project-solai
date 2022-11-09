@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from updater.compare import get_stocks
+from spider.compare import get_stocks
 from drf_yasg.utils import swagger_auto_schema
 from clock import market_is_open
 
