@@ -1,11 +1,9 @@
-from rest_framework.routers import DefaultRouter
-from django.urls import include, path
-from accounts.views import EmailUserView, GenerateApiKeyView, SignupView, ResetApiKeyView, ForgetPasswordView, ChangePassword, LogoutView, LogoutAllView, TestView
+from django.urls import path
+from accounts.views import EmailUserView, GenerateApiKeyView, SignupView, ResetApiKeyView, ForgetPasswordView, ChangePassword, LogoutView, LogoutAllView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 urlpatterns = [
-    path('test/', TestView.as_view(), name='tester'),
     path('signup/', SignupView.as_view(), name='signup'),
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('logoutall/', LogoutAllView.as_view(), name='logout_all'),

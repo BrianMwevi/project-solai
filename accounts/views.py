@@ -144,12 +144,3 @@ class LogoutAllView(views.APIView):
         scheduler.add_job(LongTasks.blacklist_user_tokens,
                           args=[request.user.id])
         return Response(status=status.HTTP_205_RESET_CONTENT)
-
-
-class TestView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(auto_schema=None)
-    def get(self, request):
-        print(request.user.id)
-        return Response({"message": "Hi, get method successful"}, status=status.HTTP_200_OK)
