@@ -1,11 +1,19 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from updater.compare import get_stocks
+from drf_yasg.utils import swagger_auto_schema
 
 
 class StockConsumer(AsyncWebsocketConsumer):
     """Handles realtime websocket connections for authenticated users"""
 
+    @swagger_auto_schema(
+        operation_description="Realtime stocks data",
+        operation_summary="Gateway for clients to connected and receive realtime stocks data",
+        operation_id="sockets",
+        tags=["websockets"],
+        
+    )
     async def connect(self):
         await self.accept()
         user = self.scope['user']
