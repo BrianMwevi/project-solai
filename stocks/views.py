@@ -1,4 +1,4 @@
-from rest_framework import generics, views, status
+from rest_framework import views, status
 from rest_framework.response import Response
 from simple_history.utils import update_change_reason
 from rest_framework_api_key.permissions import HasAPIKey
@@ -8,40 +8,21 @@ from stocks.serializers import StockSerializer
 from accounts.permissions import IsStockAdmin
 
 
-class RealTimeStocks(generics.ListAPIView):
-    queryset = Stock.objects.all()
-    serializer_class = StockSerializer
-    # permission_classes = [HasAPIKey, IsAdmin |IsInvestor | IsTrader | IsDeveloper]
+class HistoryView(views.APIView):
+    permission_classes = [HasAPIKey]
 
-    # def get_throttles(self):
-    #     throttle_classes = []
-    #     if self.request.user.role == "DEVELOPER":
-    #         throttle_classes = [DeveloperThrottle]
-    #     elif self.request.user.role == "INVESTOR":
-    #         throttle_classes = [InvestorThrottle]
-    #     elif self.request.user.role == "TRADER":
-    #         throttle_classes = [TraderThrottle]
-    #     return [throttle() for throttle in throttle_classes]
+    def get(self, request):
+        ticker = request.data.get('ticker')
+        start_date = request.data.get('startDate')
+        end_date = request.data.get('endDate')
 
-
-class HistoryView(generics.ListAPIView):
-    queryset = Stock.history.all()
-    serializer_class = StockSerializer
-    # permission_classes = [IsAuthenticated, IsAdmin |
-    #                       IsInvestor | IsTrader | IsDeveloper]
-
-    # def get_throttles(self):
-    #     throttle_classes = []
-    #     if self.request.user.role == "DEVELOPER":
-    #         throttle_classes = [DeveloperThrottle]
-    #     elif self.request.user.role == "INVESTOR":
-    #         throttle_classes = [InvestorThrottle]
-    #     elif self.request.user.role == "TRADER":
-    #         throttle_classes = [TraderThrottle]
-    #     return [throttle() for throttle in throttle_classes]
-
-    def get_queryset(self):
-        return self.queryset.filter(ticker=self.request.GET.get('ticker'))[:30]
+        if ticker and start_date:
+            ticker = ticker.upper()
+            serializer = StockSerializer(Stock.get_history(
+                ticker, start_date, end_date), many=True)
+            content = {"data": serializer.data}
+            return Response(content, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class AdminApiView(views.APIView):
@@ -67,7 +48,9 @@ class AdminApiView(views.APIView):
             instance = queryset.get(ticker=stock['ticker'])
             serializer = StockSerializer(
                 instance, data=stock, context={'request': request})
+
             if stock['change'] != float(instance.change) and serializer.is_valid():
+                print("Data ready to be saved!")
                 updated_stock = serializer.save()
                 updated_stocks['stocks'].append(serializer.data)
                 update_change_reason(updated_stock, "Update")
