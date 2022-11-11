@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.messages',
-    
+
     'simple_history',
     'corsheaders',
 
@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
-    
+
     'accounts.apps.AccountsConfig',
     'stocks.apps.StocksConfig',
 ]
@@ -169,9 +169,9 @@ EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 
 # WHITELISTED DOMAINS TO ACCESS THIS APP
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:8000",
-    "https://web-production-7794.up.railway.app",
+    "http://localhost:3000", # React application
+    "http://localhost:4200", # Angular application
+
 ]
 
 # Update database configuration from $DATABASE_URL.
@@ -183,6 +183,7 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
 # SECURE_HSTS_PRELOAD = True
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'",)

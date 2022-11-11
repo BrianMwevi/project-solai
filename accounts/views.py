@@ -30,8 +30,8 @@ class GenerateApiKeyView(views.APIView):
     permission_classes = [IsAuthenticated, IsDeveloper, CanGenerateKey]
 
     @swagger_auto_schema(
-        operation_summary="Generate new ApiKey",
-        operation_description="Generates an api key for authenticated developers who have no record of generating any in the past",
+        operation_summary="Generate New ApiKey",
+        operation_description="Generates an api key for an authenticated user who have no record of generating any in the past",
         tags=['ApiKeys'],)
     def post(self, request):
         _, key = NewKey.generate(request.user.id)
@@ -84,9 +84,9 @@ class ForgetPasswordView(views.APIView):
     authentication_classes = ()
 
     @swagger_auto_schema(
-        operation_summary="Forget password",
+        operation_summary="Forgot password",
         operation_description="Takes user's email address and sends a password reset confirmation email if a user with that email exists",
-        tags=["Authentication"],
+        tags=["User Authentication"],
     )
     def post(self, request):
         if request.data.get('email', None):
@@ -104,7 +104,7 @@ class ChangePassword(views.APIView):
     @swagger_auto_schema(
         operation_summary="Change password",
         operation_description="Sets new password for a user and blacklists all associated refresh tokens",
-        tags=["Authentication"]
+        tags=["User Authentication"]
     )
     def post(self, request):
         request.user.set_password(request.data['password'])
@@ -120,7 +120,7 @@ class LogoutView(views.APIView):
     @swagger_auto_schema(
         operation_summary="Logout current session",
         operation_description="Logs out the requesting user and blacklists the refresh_token sent in the body",
-        tags=["Authentication"]
+        tags=["User Authentication"]
     )
     def post(self, request):
         try:
@@ -138,7 +138,7 @@ class LogoutAllView(views.APIView):
     @swagger_auto_schema(
         operation_summary="Logout everywhere",
         operation_description="Logs out the user and blacklists all the refresh tokens linked to the user",
-        tags=["Authentication"]
+        tags=["User Authentication"]
     )
     def post(self, request):
         scheduler.add_job(LongTasks.blacklist_user_tokens,

@@ -19,7 +19,7 @@ class User(AbstractUser):
         BUSINESS = "BUSINESS", 'Business'
         PERSONAL = "PERSONAL", 'Personal'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     usage = models.CharField(max_length=55, choices=Usage.choices)
     role = models.CharField(max_length=55, choices=Role.choices)
     is_staff = models.BooleanField(default=False)

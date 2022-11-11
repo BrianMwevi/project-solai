@@ -11,3 +11,10 @@ class StockSerializer(serializers.ModelSerializer):
 
     def get_id(self, obj):
         return obj.pk
+
+
+class HistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Stock
+        fields = ['price', 'updated_at']

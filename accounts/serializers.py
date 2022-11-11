@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from core.tasks import LongTasks
 from clock import scheduler
-
+from drf_yasg.utils import swagger_auto_schema
 
 User = get_user_model()
 
