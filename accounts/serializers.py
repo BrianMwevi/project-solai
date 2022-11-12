@@ -11,7 +11,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'usage', 'role']
+        fields = ['id', 'username', 'email', 'password', 'usage']
         extra_kwargs = {'password': {'write_only': True},
                         }
 
@@ -20,8 +20,7 @@ class SignupSerializer(serializers.ModelSerializer):
         email = validated_data['email']
         password = validated_data['password']
         usage = validated_data['usage']
-        role = validated_data['role']
-        user = User(email=email, username=username, usage=usage, role=role)
+        user = User(email=email, username=username, usage=usage)
         user.set_password(password)
         user.save()
         mail_subject = "Solai Account Activation"
