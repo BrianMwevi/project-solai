@@ -21,7 +21,8 @@ class User(AbstractUser):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     usage = models.CharField(max_length=55, choices=Usage.choices)
-    role = models.CharField(max_length=55, choices=Role.choices)
+    role = models.CharField(
+        max_length=55, choices=Role.choices, default=Role.DEVELOPER)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
