@@ -49,6 +49,7 @@ class User(AbstractUser):
         DEVELOPER = "DEVELOPER", 'Developer'
         TRADER = "TRADER", 'Trader'
         INVESTOR = "INVESTOR", 'Investor'
+        ADMIN = "ADMIN", 'Admin'
 
     class Usage(models.TextChoices):
         STUDENT = "STUDENT", 'Student'
@@ -59,7 +60,7 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     is_active = models.BooleanField(default=False)
     usage = models.CharField(max_length=20, choices=Usage.choices)
-    role = models.CharField(max_length=20, choices=Roles.choices)
+    role = models.CharField(max_length=20, choices=Roles.choices, default=Roles.DEVELOPER)
     email = models.EmailField(_('email address'), unique=True)
     api_key = models.ForeignKey(
         APIKey,

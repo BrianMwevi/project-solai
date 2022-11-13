@@ -1,24 +1,32 @@
-from rest_framework import views, status
+from rest_framework import views, status, generics
 from rest_framework.response import Response
-from simple_history.utils import update_change_reason
 from rest_framework_api_key.permissions import HasAPIKey
+
+from django.utils.decorators import method_decorator
+
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+from simple_history.utils import update_change_reason
 
 from stocks.models import Stock
 from stocks.serializers import StockSerializer, HistorySerializer
 from accounts.permissions import IsStockAdmin
 
 
-class HistoryView(views.APIView):
-    permission_classes = [HasAPIKey]
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_summary="Stock History",
+    operation_description="Fetches the history of specific stock using a ticker symbol, start and end date. Returns 404 if wrong ticker is passed",
+    tags=['Stocks'],
 
-    @swagger_auto_schema(
-        operation_summary="Stock History",
-        operation_description="Fetches the history of specific stock using a ticker symbol, start and end date. Returns 404 if wrong ticker is passed",
-        tags=['Stocks']
-    )
-    def get(self, request):
-        ticker = request.data.get('ticker')
+    # responses={status.HTTP_200_OK: HistorySerializer(many=True)},
+))
+class HistoryView(generics.ListAPIView):
+    permission_classes = [HasAPIKey]
+    serializer_class = HistorySerializer
+
+    def get(self, request, *args, **kwargs):
+        ticker = request.data.get('ticker').upper()
         start_date = request.data.get('startDate')
         end_date = request.data.get('endDate')
 
@@ -31,14 +39,23 @@ class HistoryView(views.APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    operation_summary="Stock Creation",
+    operation_description="Takes a list of stocks to be created and returns the created stocks",
+    tags=['Stocks'],
+    query_serializer=StockSerializer,
+    auto_schema=None,
+))
+@method_decorator(name='put', decorator=swagger_auto_schema(
+    operation_summary="Stock Update",
+    operation_description="Takes a list of stocks to be updated and returns the updated stocks",
+    tags=['Stocks'],
+    query_serializer=StockSerializer,
+    auto_schema=None,
+))
 class AdminApiView(views.APIView):
     permission_classes = [HasAPIKey, IsStockAdmin]
 
-    @swagger_auto_schema(
-        operation_summary="Stock Creation",
-        operation_description="Takes a list of stocks to be created and returns the created stocks",
-        tags=['Stocks']
-    )
     def post(self, request):
         stocks = request.data['stocks']
         created_stocks = {"stocks": []}
@@ -51,11 +68,6 @@ class AdminApiView(views.APIView):
 
         return Response(created_stocks, status=status.HTTP_201_CREATED)
 
-    @swagger_auto_schema(
-        operation_summary="Stock Update",
-        operation_description="Takes a list of stocks and verifies each stock with the one in db. It updates the db if the stock has changed. Returns the updated stocks",
-        tags=['Stocks']
-    )
     def put(self, request, format=None):
         stocks = request.data['stocks']
         updated_stocks = {"stocks": []}

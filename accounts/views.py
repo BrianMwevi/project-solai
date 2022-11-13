@@ -38,7 +38,7 @@ class SignupView(generics.CreateAPIView):
     operation_summary='Login User',
     operation_description='Takes users email and password, authenticates and generates access token',
     tags=['User Authentication'],
-    responses={'200':  TokenRefreshSerializer},
+    responses={status.HTTP_200_OK:  TokenRefreshSerializer},
 ))
 class LoginView(TokenObtainPairView):
 
@@ -197,6 +197,7 @@ class ForgotPasswordView(views.APIView):
     operation_summary="Change User Password",
     operation_description="Sets new password for a user and blacklists all associated refresh tokens",
     tags=["User Authentication"],
+    auto_schema=None,
     request_body=ChangePasswordSerializer,
     responses={status.HTTP_200_OK: ""}
 ))
