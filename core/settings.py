@@ -193,7 +193,7 @@ CSP_FONT_SRC = ("'self'",)
 
 # Simple jwt settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=3),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=59),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'USER_ID_CLAIM': 'id',
 }
