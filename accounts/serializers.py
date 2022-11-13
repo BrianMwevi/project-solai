@@ -6,9 +6,12 @@ from django.contrib.auth.models import Group
 
 from core.tasks import LongTasks
 from clock import scheduler
+from drf_yasg.utils import swagger_auto_schema
 
 
 class UserSerializer(serializers.ModelSerializer):
+    first_name= serializers.CharField(required=True)
+    last_name= serializers.CharField(required=True)
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
@@ -43,6 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(TokenObtainPairSerializer):
+    @swagger_auto_schema(query_serializer=UserSerializer, tags=['User Authentication'])
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
