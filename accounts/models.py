@@ -57,6 +57,7 @@ class User(AbstractUser):
 
     username = None
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    is_active = models.BooleanField(default=False)
     usage = models.CharField(max_length=20, choices=Usage.choices)
     role = models.CharField(max_length=20, choices=Roles.choices)
     email = models.EmailField(_('email address'), unique=True)
@@ -77,6 +78,9 @@ class User(AbstractUser):
     @classmethod
     def get_user(cls, id):
         return cls.objects.get(id=id)
-
+    @classmethod
+    def get_user_by_email(cls, email):
+        return cls.objects.get(email=email)
+        
     def __str__(self):
         return f"{self.email}"

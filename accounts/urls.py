@@ -1,6 +1,6 @@
 from django.urls import path
-from accounts.views import EmailUserView, GenerateApiKeyView, SignupView, LoginView, ResetApiKeyView, ForgetPasswordView, ChangePassword, LogoutView, LogoutAllView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from accounts.views import EmailUserView, GenerateApiKeyView, SignupView, LoginView, ResetApiKeyView, ForgotPasswordView, ChangePasswordView, LogoutView, LogoutAllView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 urlpatterns = [
@@ -9,8 +9,8 @@ urlpatterns = [
     path('logoutall/', LogoutAllView.as_view(), name='logout_all'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('token/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
-    path('password/reset/', ForgetPasswordView.as_view(), name='reset_password'),
-    path('password/change/', ChangePassword.as_view(), name='new_password'),
+    path('password/reset/', ForgotPasswordView.as_view(), name='reset_password'),
+    path('password/change/', ChangePasswordView.as_view(), name='change_password'),
     path('apikey/reset/', ResetApiKeyView.as_view(), name='reset_key'),
     path('apikey/generate/', GenerateApiKeyView.as_view(), name='new_apikey'),
     path(
