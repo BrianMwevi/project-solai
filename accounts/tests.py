@@ -1,58 +1,91 @@
-from django.test import TestCase
+import json
+import base64
+
+from rest_framework import status
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase, APIClient
+
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
+
+PASSWORD = 'pAsswOrd!'
 
 
-class UserTestCase(TestCase):
-    """Test case for User object interaction"""
-    username = "johndoe"
-    email = "doe@gmail.com"
-    password = "pass11234"
-    role = "DEVELOPER"
-    usage = "PERSONAL"
+def create_user(email='user@gmail.com', password=PASSWORD):
+    user = get_user_model().objects.create_user(
+        email=email,
+        first_name='Test',
+        last_name='User',
+        password=password
+    )
+    # bypassing email confirmation
+    user.is_active = True
+    user.save()
+    return user
+
+
+class AuthenticationTest(APITestCase):
 
     def setUp(self):
-        self.user = User(username=self.username,
-                         email=self.email, password=self.password, role=self.role, usage=self.usage)
-        self.user.save()
+        self.client = APIClient()
 
-    def tearDown(self):
-        User.objects.all().delete()
+    def test_user_can_sign_up(self):
+        response = self.client.post(reverse('signup'), data={
+            'email': 'user@gmail.com',
+            'first_name': 'Test',
+            'last_name': 'User',
+            'password1': PASSWORD,
+            'password2': PASSWORD,
+            'usage': 'PERSONAL',
+            'role': 'DEVELOPER',
+        })
+        user = get_user_model().objects.last()
 
-    def test_instance(self):
-        self.assertTrue(isinstance(self.user, User))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['id'], str(user.id))
+        self.assertEqual(response.data['email'], user.email)
+        self.assertEqual(response.data['first_name'], user.first_name)
+        self.assertEqual(response.data['last_name'], user.last_name)
+        self.assertEqual(response.data['usage'], user.usage)
+        self.assertEqual(response.data['role'], user.role)
 
-    def test_save_method(self):
-        users = User.objects.all()
-        self.assertTrue(len(users) == 1)
+    def test_user_can_login(self):
+        user = create_user()
 
-    def test_user_details(self):
-        user = User.objects.get(username=self.username)
-        self.assertTrue(user.username == self.username)
-        self.assertTrue(user.email == self.email)
-        self.assertTrue(user.password == self.password)
-        self.assertTrue(user.role == self.role)
-        self.assertTrue(user.role == self.role)
-        self.assertTrue(user.usage == self.usage)
-        self.assertTrue(user.is_confirmed == False)
+        response = self.client.post(reverse('login'), data={
+            'email': user.email,
+            'password': PASSWORD,
+        })
 
-    def test_cannot_change_user_role(self):
-        user = User.objects.get(username=self.username)
-        user.role = "TRADER"
-        user.save()
-        self.assertTrue(user.role == "TRADER")
+        access = response.data['access']
+        header, payload, signature = access.split('.')
+        # == adding back padding chars that JWT strips out to avoid errors
+        decoded_payload = base64.b64decode(f'{payload}==')
+        payload_data = json.loads(decoded_payload)
 
-        # Refresh the database
-        updated_user = User.objects.get(username=self.username)
-        self.assertTrue(updated_user.role == "DEVELOPER")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.data['refresh'])
+        self.assertEqual(payload_data['id'], str(user.id))
+        self.assertEqual(payload_data['email'], str(user.email))
+        self.assertEqual(payload_data['first_name'], str(user.first_name))
+        self.assertEqual(payload_data['first_name'], str(user.first_name))
+        self.assertEqual(payload_data['last_name'], str(user.last_name))
 
-    def test_cannot_change_user_usage(self):
-        user = User.objects.get(username=self.username)
-        user.usage = "BUSINESS"
-        user.save()
-        self.assertTrue(user.usage == "BUSINESS")
+    def test_change_password(self):
+        user = create_user()
+        login_response = self.client.post(reverse('login'), data={
+            'email': user.email,
+            'password': PASSWORD,
+        })
 
-        # Refresh the database
-        updated_user = User.objects.get(username=self.username)
-        self.assertTrue(updated_user.usage == "PERSONAL")
+        access_token = login_response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        password_response = self.client.put(reverse('change_password'), data={
+            'old_password': PASSWORD,
+            'new_password': "pass11234"
+        })
+        updated_user = get_user_model().objects.get(email=user.email)
+
+        self.assertEqual(password_response.status_code, status.HTTP_200_OK)
+        self.assertTrue(updated_user.check_password('pass11234'))
