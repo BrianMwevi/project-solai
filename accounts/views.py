@@ -2,6 +2,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics, views, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.contrib.auth import get_user_model
 from django.utils.encoding import force_text
@@ -10,7 +11,7 @@ from django.utils.http import urlsafe_base64_decode
 from drf_yasg.utils import swagger_auto_schema
 
 from accounts.permissions import CanGenerateKey, IsDeveloper
-from accounts.serializers import SignupSerializer
+from accounts.serializers import UserSerializer, LoginSerializer
 from accounts.tokens import account_activation_token
 from accounts.api_keys import NewKey
 from core.tasks import LongTasks
@@ -21,9 +22,47 @@ User = get_user_model()
 
 class SignupView(generics.CreateAPIView):
     """Creates a developer account using the provided account details"""
-    serializer_class = SignupSerializer
+    serializer_class = UserSerializer
     permission_classes = ()
     authentication_classes = ()
+
+
+class LoginView(TokenObtainPairView):
+    authentication_classes = ()
+    permission_classes = ()
+    serializer_class = LoginSerializer
+
+
+class LogoutView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Logout current session",
+        operation_description="Logs out the requesting user and blacklists the refresh_token sent in the body",
+        tags=["User Authentication"]
+    )
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutAllView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Logout everywhere",
+        operation_description="Logs out the user and blacklists all the refresh tokens linked to the user",
+        tags=["User Authentication"]
+    )
+    def post(self, request):
+        scheduler.add_job(LongTasks.blacklist_user_tokens,
+                          args=[request.user.id])
+        return Response(status=status.HTTP_205_RESET_CONTENT)
 
 
 class GenerateApiKeyView(views.APIView):
@@ -112,35 +151,3 @@ class ChangePassword(views.APIView):
         scheduler.add_job(LongTasks.blacklist_user_tokens,
                           args=[request.user.id])
         return Response(status=status.HTTP_201_CREATED)
-
-
-class LogoutView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(
-        operation_summary="Logout current session",
-        operation_description="Logs out the requesting user and blacklists the refresh_token sent in the body",
-        tags=["User Authentication"]
-    )
-    def post(self, request):
-        try:
-            refresh_token = request.data["refresh_token"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class LogoutAllView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(
-        operation_summary="Logout everywhere",
-        operation_description="Logs out the user and blacklists all the refresh tokens linked to the user",
-        tags=["User Authentication"]
-    )
-    def post(self, request):
-        scheduler.add_job(LongTasks.blacklist_user_tokens,
-                          args=[request.user.id])
-        return Response(status=status.HTTP_205_RESET_CONTENT)

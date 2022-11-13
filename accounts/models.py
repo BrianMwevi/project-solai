@@ -1,98 +1,82 @@
 import uuid
-from multiprocessing.managers import BaseManager
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.utils.translation import ugettext_lazy as _
+
 from rest_framework_api_key.models import APIKey
 
 
-class User(AbstractUser):
-    """Defines custom user objects -- Developer, Investor and Trader. Default user role is developer"""
+class CustomUserManager(BaseUserManager):
+    """
+    Custom user model manager where email is the unique identifiers
+    for authentication instead of usernames.
+    """
 
-    class Role(models.TextChoices):
-        ADMIN = "ADMIN", 'Admin'
+    def create_user(self, email, password, **extra_fields):
+        """
+        Create and save a User with the given email and password.
+        """
+        if not email:
+            raise ValueError(_('The Email must be set'))
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, email, password, **extra_fields):
+        """
+        Create and save a SuperUser with the given email and password.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(_('Superuser must have is_staff=True.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(_('Superuser must have is_superuser=True.'))
+        return self.create_user(email, password, **extra_fields)
+
+
+class User(AbstractUser):
+    """Defines a custom user with a role and reason for app usage"""
+
+    objects = CustomUserManager()
+
+    class Roles(models.TextChoices):
         DEVELOPER = "DEVELOPER", 'Developer'
         TRADER = "TRADER", 'Trader'
         INVESTOR = "INVESTOR", 'Investor'
 
     class Usage(models.TextChoices):
         STUDENT = "STUDENT", 'Student'
-        BUSINESS = "BUSINESS", 'Business'
         PERSONAL = "PERSONAL", 'Personal'
+        BUSINESS = "BUSINESS", 'Business'
 
+    username = None
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    usage = models.CharField(max_length=55, choices=Usage.choices)
-    role = models.CharField(
-        max_length=55, choices=Role.choices, default=Role.DEVELOPER)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
-    email = models.EmailField(unique=True)
+    usage = models.CharField(max_length=20, choices=Usage.choices)
+    role = models.CharField(max_length=20, choices=Roles.choices)
+    email = models.EmailField(_('email address'), unique=True)
     api_key = models.ForeignKey(
-        APIKey, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_apikey')
-
+        APIKey,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='user_apikey')
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
 
-    @classmethod
-    def get_user_by_email(cls, email):
-        return cls.objects.filter(email__iexact=email).first()
+    @property
+    def group(self):
+        groups = self.groups.all()
+        return groups[0].name if groups else None
 
     @classmethod
     def get_user(cls, id):
         return cls.objects.get(id=id)
 
-
-class DeveloperManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        return queryset.filter(role=User.Role.DEVELOPER)
-
-
-class Developer(User):
-    base_role = User.Role.DEVELOPER
-    developer = DeveloperManager()
-
-    class Meta:
-        proxy = True
-
-
-class TraderManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        return queryset.filter(role=User.Role.TRADER)
-
-
-class Trader(User):
-    base_role = User.Role.TRADER
-    trader = TraderManager()
-
-    class Meta:
-        proxy = True
-
-
-class InvestorManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        return queryset.filter(role=User.Role.INVESTOR)
-
-
-class Investor(User):
-    base_role = User.Role.INVESTOR
-    investor = InvestorManager()
-
-    class Meta:
-        proxy = True
-
-
-class AdminManager(BaseManager):
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset(*args, **kwargs)
-        return queryset.filter(role=User.Role.ADMIN)
-
-
-class Admin(User):
-    base_role = User.Role.ADMIN
-    admin = AdminManager()
-
-    class Meta:
-        proxy = True
+    def __str__(self):
+        return f"{self.email}"
