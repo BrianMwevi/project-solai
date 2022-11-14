@@ -54,12 +54,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_THROTTLE_CLASSES': [
-        'accounts.throttles.DeveloperThrottle',
+        # 'accounts.throttles.DeveloperThrottle',
         # 'accounts.throttles.TraderThrottle',
         # 'accounts.throttles.InvestorThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'developer': '6/hour',
+        # 'developer': '6/hour',
         # 'investor': '15/hour',
         # 'trader': '15/hour',
     },
