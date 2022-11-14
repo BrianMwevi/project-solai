@@ -77,7 +77,7 @@ def set_pricing(new_stock, old_stock=None):
     price = new_stock['price']
     open_price = new_stock['open']
     high, low = get_min_max(price, open_price)
-    old_stock.update(new_stock)
+    # old_stock.update(new_stock)
 
     if high > old_stock['high']:
         old_stock['high'] = high

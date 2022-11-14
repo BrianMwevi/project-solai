@@ -35,7 +35,7 @@ class StocksController:
     async def update_clients(stock):
         channel_layer = get_channel_layer()
         await channel_layer.group_send(
-            "stock_clients",
+            "clients",
             {"type": "client_message", "data": stock}
         )
 
