@@ -171,6 +171,8 @@ EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React application
     "http://localhost:4200",  # Angular application
+    "https://solai.up.railway.app",
+    "https://solai2.up.railway.app",
 
 ]
 
