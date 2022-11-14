@@ -173,7 +173,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",  # Angular application
     "https://solai.up.railway.app",
     "https://solai2.up.railway.app",
-    "127.0.0.1:8000",
+    "http://127.0.0.1:8000",
 
 ]
 

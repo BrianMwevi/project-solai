@@ -36,10 +36,12 @@ def save_stock(stock):
 def update_stock(new_stock):
     """ Updates stock in stocks.json file """
     old_stock = get_stock(new_stock['ticker'])
-    to_update = set_pricing(new_stock, old_stock)
+    to_update = None
+    if old_stock:
+        to_update = set_pricing(new_stock, old_stock)
     saved_stock = save_stock(to_update)
-
     return saved_stock
+
 
 
 def get_json_file():
