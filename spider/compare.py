@@ -1,9 +1,9 @@
 import json
 import os
-
+from asgiref.sync import async_to_sync
 # TODO: Use OOP --> convert all funcs to class methods
 
-
+# @async_to_sync
 def compare_stock(new_stock):
     old_stock = get_stock(new_stock['ticker'])
     updated = created = False
