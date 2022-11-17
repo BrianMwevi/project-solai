@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from spider.compare import get_stocks
+from spider.compare import Compare
 from drf_yasg.utils import swagger_auto_schema
 from clock import market_is_open
 
@@ -20,7 +20,7 @@ class StockConsumer(AsyncWebsocketConsumer):
 
         if market_open and self.scope['user'].is_authenticated:
             await self.accept()
-            stocks = list(get_stocks().values())
+            stocks = list(Compare.get_stocks().values())
             await self.send(text_data=json.dumps(stocks))
             await self.channel_layer.group_add("clients", self.channel_name)
         else:
