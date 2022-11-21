@@ -1,13 +1,11 @@
 from django.contrib import admin
-from stocks_v1.models import Stock, StockTracker, PriceNotification
+from stocks_v1.models import Stock
+
 from simple_history.admin import SimpleHistoryAdmin
 
 
-class StockHistoryAdmin(SimpleHistoryAdmin):
-    history_list_display = ['price', 'prev_price',
-                            'open_price', 'percentage_change', 'max_price', 'min_price']
+# class StockHistoryAdmin(SimpleHistoryAdmin):
+#     history_list_display = ['open', 'price', 'change', 'high', 'low']
 
 
-admin.site.register(Stock, StockHistoryAdmin)
-admin.site.register(StockTracker)
-admin.site.register(PriceNotification)
+admin.site.register(Stock)

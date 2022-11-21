@@ -1,11 +1,10 @@
-
 import uuid
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 
-# from rest_framework_api_key.models import APIKey
+from rest_framework_api_key.models import APIKey
 
 
 class CustomUserManager(BaseUserManager):
@@ -61,15 +60,14 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     is_active = models.BooleanField(default=False)
     usage = models.CharField(max_length=20, choices=Usage.choices)
-    role = models.CharField(
-        max_length=20, choices=Roles.choices, default=Roles.DEVELOPER)
+    role = models.CharField(max_length=20, choices=Roles.choices, default=Roles.DEVELOPER)
     email = models.EmailField(_('email address'), unique=True)
-    # api_key = models.ForeignKey(
-    #     APIKey,
-    #     on_delete=models.SET_NULL,
-    #     blank=True,
-    #     null=True,
-    #     related_name='user_apikey')
+    api_key = models.ForeignKey(
+        APIKey,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='user_apikey')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -81,10 +79,9 @@ class User(AbstractUser):
     @classmethod
     def get_user(cls, id):
         return cls.objects.get(id=id)
-
     @classmethod
     def get_user_by_email(cls, email):
         return cls.objects.get(email=email)
-
+        
     def __str__(self):
         return f"{self.email}"

@@ -1,19 +1,18 @@
-import os
+from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-from channels.security.websocket import AllowedHostsOriginValidator
-from channels.auth import AuthMiddlewareStack
+import os
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django_asgi_app = get_asgi_application()
 
-from channels.routing import ProtocolTypeRouter, URLRouter
-import stocks_channel.routing
-from stocks_channel.userAuthMiddleware import UserAuthMiddleware
+import stocks_sockets.routing
+from stocks_sockets.userAuthMiddleware import UserAuthMiddleware
+
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": UserAuthMiddleware(URLRouter(
-        stocks_channel.routing.websocket_urlpatterns
+        stocks_sockets.routing.websocket_urlpatterns
     ))
 })
