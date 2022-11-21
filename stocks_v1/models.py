@@ -14,14 +14,14 @@ class Stock(models.Model):
     ticker = models.CharField(max_length=10, unique=True)
     volume = models.PositiveIntegerField(default=0.00)
     price = models.DecimalField(max_digits=10, default=0, decimal_places=2)
-    prev_price = models.DecimalField(
+    close = models.DecimalField(
         max_digits=10, default=0, decimal_places=2)
-    open_price = models.DecimalField(
+    open = models.DecimalField(
         max_digits=10, default=0, decimal_places=2)
-    percentage_change = models.DecimalField(
+    change = models.DecimalField(
         max_digits=10, default=0, decimal_places=2)
-    max_price = models.DecimalField(max_digits=10, default=0, decimal_places=2)
-    min_price = models.DecimalField(
+    high = models.DecimalField(max_digits=10, default=0, decimal_places=2)
+    low = models.DecimalField(
         max_digits=10, default=0, decimal_places=2)
     updated_at = models.DateTimeField(auto_now=True)
     history = HistoricalRecords(related_name='logs')
