@@ -134,3 +134,6 @@ json_stocks.json
 
 stocks.json
 feedback.py
+
+# DB Backups
+dbbackup
