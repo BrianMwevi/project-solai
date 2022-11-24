@@ -51,7 +51,7 @@ class Stock(models.Model):
         return self.ticker
 
 
-class StockTracker(models.Model):
+class Tracker(models.Model):
     investors = models.ManyToManyField(User, related_name="trackers")
     stock = models.ForeignKey(Stock, related_name='asset',
                               on_delete=models.CASCADE)
@@ -96,7 +96,7 @@ class StockTracker(models.Model):
 
 class PriceNotification(models.Model):
     subscriber = models.ForeignKey(
-        StockTracker, related_name="subscribers", on_delete=models.SET_NULL, null=True)
+        Tracker, related_name="subscribers", on_delete=models.SET_NULL, null=True)
     viewers = models.ManyToManyField(
         User, related_name="viewed")
     content = models.CharField(max_length=255)
@@ -125,6 +125,6 @@ class PriceNotification(models.Model):
         return self.content
 
 
-@receiver(pre_save, sender=StockTracker)
+@receiver(pre_save, sender=Tracker)
 def set_at_tracking(sender, instance, **kwargs):
     instance.at_tracking = instance.stock.price
