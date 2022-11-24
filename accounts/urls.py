@@ -3,6 +3,7 @@ from accounts.views import EmailUserView, GenerateApiKeyView, SignupView, LoginV
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
+
 urlpatterns = [
     path('signup/', SignupView.as_view(), name='signup'),
     path('login/', LoginView.as_view(), name='login'),
