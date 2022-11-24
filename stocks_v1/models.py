@@ -29,7 +29,6 @@ class Stock(models.Model):
 
     @classmethod
     def update_stock(cls, stock):
-        print("Updated: ", stock['ticker'])
         return cls.objects.filter(ticker=stock['ticker']).update(**stock)
 
     @classmethod
