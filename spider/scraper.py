@@ -63,8 +63,8 @@ def main():
 
     # TODO: Perform async tasks
     if to_create['stocks']:
-        scheduler.add_job(async_to_sync(StocksController.create_stocks), args=[
-                          to_create], replace_existing=True)
+        scheduler.add_job(async_to_sync(
+            StocksController.create_stocks), args=[to_create])
     if to_update['stocks']:
-        scheduler.add_job(async_to_sync(StocksController.update_stocks), args=[
-                          to_update], replace_existing=True)
+        scheduler.add_job(async_to_sync(
+            StocksController.update_stocks), args=[to_update])

@@ -6,30 +6,25 @@ from stocks_v1.models import Stock
 
 
 class StocksController:
-
-    url = f"{config('PROD_URL')}/stocks/realtime/"
-    headers = {
-        "Authorization": f"api_key {config('API_KEY')}"
-    }
-
     @classmethod
     def create_stocks(cls, data):
         cls.logger(f"Creating {len(data['stocks'])} stock(s)...")
-        stocks = cls.send_request("POST", data, 'Created')
-        return stocks
+        instances = [Stock(**stock) for stock in data['stocks']]
+        stocks = Stock.create_stocks(instances)
+        # print("Created: ", len(stocks))
 
     @classmethod
     def update_stocks(cls, data):
         cls.logger(f"Updating {len(data['stocks'])} stock(s)...")
-        stocks = cls.send_request("PUT", data, "Updated")
-        return stocks
+        [Stock.update_stock(stock) for stock in data['stocks']]
+      
 
     @classmethod
     def send_request(cls, method, data, operation, **kwargs):
         with ClientSession() as session:
             resp = session.request(
-                method=method, url=cls.url, json=data, headers=cls.headers, **kwargs)
-            # resp.raise_for_status()
+                method=method, url=cls.url, json=data, **kwargs)
+            resp.raise_for_status()
             stocks = json.loads(resp.text())
             cls.logger(
                 f"{operation} {len(stocks['stocks'])} stock(s)\n")

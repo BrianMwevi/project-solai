@@ -37,7 +37,6 @@ class Compare:
         stocks_file = cls.get_json_file()
         with open(stocks_file, 'w') as fp:
             json.dump(stocks, fp)
-            # print("File saved", stock['change'])
         return stock
 
     @classmethod
@@ -90,11 +89,12 @@ class Compare:
         high, low = cls.get_high_low(new_stock['price'], new_stock['open'])
 
         if high > old_stock['high']:
-            old_stock['high'] = high
+            new_stock['high'] = high
         if low < old_stock['low']:
             old_stock['low'] = low
 
         old_stock['close'] = old_stock['price']
+        old_stock['price'] = new_stock['price']
         old_stock['change'] = new_stock['change']
         return old_stock
 
