@@ -7,7 +7,7 @@ scheduler = background.BackgroundScheduler()
 
 def start():
     scheduler.add_job(main, 'cron',
-                      day_of_week='mon-fri', hour='9-20', second='*/10', id="spider", replace_existing=True, coalesce=False, max_instances=1)
+                      day_of_week='mon-fri', hour='9-20', second='*/5', id="spider")
     scheduler.start()
 
 
