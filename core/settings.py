@@ -139,6 +139,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# SIMPLE HISTORY SETTINGS
+SIMPLE_HISTORY_REVERT_DISABLED = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
