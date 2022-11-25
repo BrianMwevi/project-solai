@@ -1,4 +1,4 @@
-from rest_framework import views, status, generics, viewsets
+from rest_framework import views, status, generics
 from rest_framework.response import Response
 from rest_framework_api_key.permissions import HasAPIKey
 
@@ -8,8 +8,8 @@ from drf_yasg.utils import swagger_auto_schema
 
 from simple_history.utils import update_change_reason
 
-from stocks_v1.models import Stock, Tracker
-from stocks_v1.serializers import StockSerializer, HistorySerializer, TrackerSerializer
+from stocks_v1.models import Stock
+from stocks_v1.serializers import StockSerializer, HistorySerializer
 from accounts.permissions import IsStockAdmin
 
 
@@ -81,20 +81,3 @@ class AdminApiView(views.APIView):
                 updated_stocks['stocks'].append(serializer.data)
                 update_change_reason(updated_stock, "Update")
         return Response(updated_stocks)
-
-
-class TrackerViewSet(viewsets.ModelViewSet):
-    queryset = Tracker.objects.all()
-    serializer_class = TrackerSerializer
-
-    def get_queryset(self):
-        return self.queryset.filter(investors=self.request.user)
-
-    def perform_create(self, serializer):
-        ticker = self.request.data['stock']
-        quote_price = float(self.request.data['quote_price'])
-        stock = Tracker.check_stock(ticker, quote_price)
-
-        if not stock:
-            stock = serializer.save()
-        stock.investors.add(self.request.user)

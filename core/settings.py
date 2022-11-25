@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     'accounts.apps.AccountsConfig',
     'stocks_v1.apps.StocksConfig',
+    'tracker.apps.TrackerConfig',
 ]
 
 MIDDLEWARE = [

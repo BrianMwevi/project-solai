@@ -1,9 +1,5 @@
 from django.db import models
-from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import pre_save
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 
 from simple_history.models import HistoricalRecords
 
@@ -49,82 +45,3 @@ class Stock(models.Model):
 
     def __str__(self):
         return self.ticker
-
-
-class Tracker(models.Model):
-    investors = models.ManyToManyField(User, related_name="trackers")
-    stock = models.ForeignKey(Stock, related_name='asset',
-                              on_delete=models.CASCADE)
-    quote_price = models.DecimalField(max_digits=10, decimal_places=2)
-    at_tracking = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True)
-    matched = models.BooleanField(default=False)
-    start_date = models.DateTimeField(auto_now=True)
-    last_updated = models.DateTimeField(auto_now_add=True)
-    matched_date = models.DateTimeField(null=True, blank=True)
-
-    def save_tracker(self):
-        self.save()
-        return self
-
-    def delete_tracker(self):
-        self.delete()
-
-    @classmethod
-    def get_stock(cls, id):
-        stock = cls.objects.get(id=id)
-        return stock
-
-    def update_matched(self):
-        self.matched_date = timezone.now()
-        self.matched = True
-        self.save()
-        return self
-
-    @classmethod
-    def check_match(cls, ticker, quote_price):
-        stock = cls.objects.filter(
-            stock__ticker=ticker, quote_price=quote_price).first()
-        return stock
-
-    class Meta:
-        ordering = ['start_date']
-
-    def __str__(self):
-        return f"{self.stock.ticker}: {self.quote_price}"
-
-
-class PriceNotification(models.Model):
-    subscriber = models.ForeignKey(
-        Tracker, related_name="subscribers", on_delete=models.SET_NULL, null=True)
-    viewers = models.ManyToManyField(
-        User, related_name="viewed")
-    content = models.CharField(max_length=255)
-    viewed = models.BooleanField(default=False)
-    created_date = models.DateTimeField(auto_now_add=True)
-    viewed_date = models.DateTimeField(blank=True, null=True)
-
-    def save_notification(self):
-        self.save()
-        return self
-
-    def delete_notification(self):
-        self.delete()
-
-    @classmethod
-    def get_viewed(cls):
-        viewed = cls.objects.filter(viewed=True)
-        return viewed
-
-    @classmethod
-    def get_unviewed(cls):
-        unviewed = cls.objects.filter(viewed=False)
-        return unviewed
-
-    def __str__(self):
-        return self.content
-
-
-@receiver(pre_save, sender=Tracker)
-def set_at_tracking(sender, instance, **kwargs):
-    instance.at_tracking = instance.stock.price
