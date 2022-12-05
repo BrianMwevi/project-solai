@@ -21,6 +21,7 @@ from accounts.permissions import IsStockAdmin
     # responses={status.HTTP_200_OK: HistorySerializer(many=True)},
 ))
 class HistoryView(generics.ListAPIView):
+    authentication_classes = ()
     permission_classes = [HasAPIKey]
     serializer_class = HistorySerializer
 
