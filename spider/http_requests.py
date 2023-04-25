@@ -8,7 +8,7 @@ class StocksController:
     headers = {
         "Authorization": f"Api-Key {config('API_KEY')}",
     }
-    url = f"{config('PROD_URL')}/stocks/realtime/"
+    url = f"{config('STOCKS_URL')}/stocks/realtime/"
 
     @classmethod
     async def create_stocks(cls, data):
